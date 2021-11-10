@@ -78,9 +78,9 @@ public class PSite {
 		}
 
 		ArrayList<double[]> rangey = new ArrayList<double[]>();
-		rangex.add(boundaryy.get(0));
+		rangey.add(boundaryy.get(0));
 		for (int i = 1; i < boundaryy.size(); i++) {
-			rangex = union(boundaryy.get(i), rangey);
+			rangey = union(boundaryy.get(i), rangey);
 		}
 
 		roadRangeX = new double[] { rangex.get(0)[1], rangex.get(1)[0] };
@@ -342,6 +342,9 @@ public class PSite {
 		if (drawRoad) {
 
 			app.pushStyle();
+
+			app.line((float) roadRangeX[0], -100, (float) roadRangeX[0], 500);
+			app.line((float) roadRangeX[1], -100, (float) roadRangeX[1], 500);
 
 			app.line(-100, (float) roadRangeY[0], 500, (float) roadRangeY[0]);
 			app.line(-100, (float) roadRangeY[1], 500, (float) roadRangeY[1]);
