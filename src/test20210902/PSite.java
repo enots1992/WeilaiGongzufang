@@ -22,9 +22,11 @@ public class PSite {
 	public HE_Mesh site;
 	public Vec[] boundary;
 
-	public double[] roadRange;
+	public double[] roadRangeX, roadRangeY;
 	public ArrayList<ArrayList<Vec>> forbid;
 	boolean drawRoad = false;
+
+	private double halfLength = 5;
 
 	public PSite() {
 		forbid = new ArrayList<ArrayList<Vec>>();
@@ -44,33 +46,53 @@ public class PSite {
 
 	}
 
+	public void separateSite() {
+
+	}
+
 	public void generateRoad() {
 		drawRoad = true;
-		ArrayList<double[]> boundary = new ArrayList<double[]>();
+		ArrayList<double[]> boundaryx = new ArrayList<double[]>();
+		ArrayList<double[]> boundaryy = new ArrayList<double[]>();
 		for (ArrayList<Vec> line : forbid) {
+			double xmax = Double.MIN_VALUE;
+			double xmin = Double.MAX_VALUE;
 			double ymax = Double.MIN_VALUE;
 			double ymin = Double.MAX_VALUE;
 			for (Vec v : line) {
+				xmax = (xmax > v.x) ? xmax : v.x;
+				xmin = (xmin < v.x) ? xmin : v.x;
 				ymax = (ymax > v.y) ? ymax : v.y;
 				ymin = (ymin < v.y) ? ymin : v.y;
 			}
-			boundary.add(new double[] { ymin, ymax });
+			boundaryx.add(new double[] { xmin, xmax });
+			boundaryy.add(new double[] { ymin, ymax });
 		}
-		sort(boundary);
-		ArrayList<double[]> range = new ArrayList<double[]>();
-		range.add(boundary.get(0));
-		for (int i = 1; i < boundary.size(); i++) {
-			range = union(boundary.get(i), range);
+		sort(boundaryx);
+		sort(boundaryy);
+
+		ArrayList<double[]> rangex = new ArrayList<double[]>();
+		rangex.add(boundaryx.get(0));
+		for (int i = 1; i < boundaryx.size(); i++) {
+			rangex = union(boundaryx.get(i), rangex);
 		}
 
-		roadRange = new double[] { range.get(0)[1], range.get(1)[0] };
-
-		for (double[] ds : range) {
-			for (double d : ds) {
-				System.out.println("d:" + d);
-
-			}
+		ArrayList<double[]> rangey = new ArrayList<double[]>();
+		rangex.add(boundaryy.get(0));
+		for (int i = 1; i < boundaryy.size(); i++) {
+			rangex = union(boundaryy.get(i), rangey);
 		}
+
+		roadRangeX = new double[] { rangex.get(0)[1], rangex.get(1)[0] };
+		roadRangeY = new double[] { rangey.get(0)[1], rangey.get(1)[0] };
+
+//		for (double[] ds : range) {
+//			for (double d : ds) {
+//				System.out.println("d:" + d);
+//
+//			}
+//		}
+
 	}
 
 	public void sort(ArrayList<double[]> ns) {
@@ -320,8 +342,9 @@ public class PSite {
 		if (drawRoad) {
 
 			app.pushStyle();
-			app.line(-100, (float) roadRange[0], 500, (float) roadRange[0]);
-			app.line(-100, (float) roadRange[1], 500, (float) roadRange[1]);
+
+			app.line(-100, (float) roadRangeY[0], 500, (float) roadRangeY[0]);
+			app.line(-100, (float) roadRangeY[1], 500, (float) roadRangeY[1]);
 			app.popStyle();
 		}
 
