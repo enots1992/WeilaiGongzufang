@@ -26,6 +26,9 @@ public class PSite {
 	public ArrayList<ArrayList<Vec>> forbid;
 	boolean drawRoad = false;
 
+	double road_y1, road_y2, road_x1;
+	Vec[][] roads;
+
 	private double halfLength = 5;
 
 	public PSite() {
@@ -39,6 +42,7 @@ public class PSite {
 		importSite();
 		importForbid();
 		generateRoad();
+		separateSite();
 
 		for (ArrayList<Vec> l : forbid) {
 			System.out.println(l.size());
@@ -47,6 +51,24 @@ public class PSite {
 	}
 
 	public void separateSite() {
+		roads = new Vec[4][];
+		road_y2 = roadRangeY[1] - halfLength;
+		road_y1 = roadRangeY[0] + halfLength;
+		road_x1 = (roadRangeX[0] + roadRangeX[1]) / 2;
+		updateRoadVecs();
+	}
+
+	public void updateRoadVecs() {
+		Vec v0 = new Vec(-100, road_y2);
+		Vec v1 = new Vec(road_x1, road_y2);
+		Vec v2 = new Vec(road_x1, road_y1);
+		Vec v3 = new Vec(road_x1, -100);
+		Vec v4 = new Vec(500, road_y1);
+
+		roads[0] = new Vec[] { v0, v1 };
+		roads[1] = new Vec[] { v1, v2 };
+		roads[2] = new Vec[] { v2, v3 };
+		roads[3] = new Vec[] { v2, v4 };
 
 	}
 
@@ -342,12 +364,19 @@ public class PSite {
 		if (drawRoad) {
 
 			app.pushStyle();
-
+			app.strokeWeight(1);
 			app.line((float) roadRangeX[0], -100, (float) roadRangeX[0], 500);
 			app.line((float) roadRangeX[1], -100, (float) roadRangeX[1], 500);
 
 			app.line(-100, (float) roadRangeY[0], 500, (float) roadRangeY[0]);
 			app.line(-100, (float) roadRangeY[1], 500, (float) roadRangeY[1]);
+
+			app.strokeWeight(3);
+
+			for (Vec[] vv : roads) {
+				app.line((float) vv[0].x, (float) vv[0].y, (float) vv[1].x, (float) vv[1].y);
+			}
+
 			app.popStyle();
 		}
 
