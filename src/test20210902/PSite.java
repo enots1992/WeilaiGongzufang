@@ -12,6 +12,7 @@ import igeo.IVec;
 import processing.core.PApplet;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_Polygon;
+import wblut.hemesh.HEC_FromPolygons;
 import wblut.hemesh.HEC_Polygon;
 import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Vertex;
@@ -19,7 +20,7 @@ import wblut.processing.WB_Render;
 
 public class PSite {
 
-	public HE_Mesh site;
+	public HE_Mesh site_, site;
 	public Vec[] boundary;
 
 	public double[] roadRangeX, roadRangeY;
@@ -50,14 +51,34 @@ public class PSite {
 
 	}
 
+	/**
+	 * set road position
+	 */
 	public void separateSite() {
 		roads = new Vec[4][];
 		road_y2 = roadRangeY[1] - halfLength;
 		road_y1 = roadRangeY[0] + halfLength;
 		road_x1 = (roadRangeX[0] + roadRangeX[1]) / 2;
+
 		updateRoadVecs();
+		updateSite();
 	}
 
+	/**
+	 * update sites
+	 */
+	public void updateSite() {
+
+		ArrayList<WB_Polygon> ps = new ArrayList<WB_Polygon>();
+		HEC_FromPolygons creator = new HEC_FromPolygons();
+		creator.setPolygons(ps);
+		site = new HE_Mesh(creator);
+
+	}
+
+	/**
+	 * set roads
+	 */
 	public void updateRoadVecs() {
 		Vec v0 = new Vec(-100, road_y2);
 		Vec v1 = new Vec(road_x1, road_y2);
@@ -72,6 +93,9 @@ public class PSite {
 
 	}
 
+	/**
+	 * get roadRange
+	 */
 	public void generateRoad() {
 		drawRoad = true;
 		ArrayList<double[]> boundaryx = new ArrayList<double[]>();
@@ -117,6 +141,11 @@ public class PSite {
 
 	}
 
+	/**
+	 * sort double[][]
+	 * 
+	 * @param ns
+	 */
 	public void sort(ArrayList<double[]> ns) {
 
 		for (int i = 0; i < ns.size() - 1; i++)
@@ -135,6 +164,11 @@ public class PSite {
 
 	}
 
+	/**
+	 * sort double[]
+	 * 
+	 * @param ns
+	 */
 	public void sort(double[] ns) {
 
 		for (int i = 0; i < ns.length - 1; i++)
@@ -148,6 +182,13 @@ public class PSite {
 
 	}
 
+	/**
+	 * union segs
+	 * 
+	 * @param seg
+	 * @param segs
+	 * @return
+	 */
 	public ArrayList<double[]> union(double[] seg, ArrayList<double[]> segs) {
 		ArrayList<double[]> out = new ArrayList<double[]>();
 		double a = seg[0];
@@ -240,6 +281,9 @@ public class PSite {
 
 	}
 
+	/**
+	 * import site info
+	 */
 	public void importSite() {
 		/**
 		 * import site
@@ -253,9 +297,12 @@ public class PSite {
 
 		WB_Polygon poly = new WB_Polygon(cs);
 		HEC_Polygon creator = new HEC_Polygon(poly, 0);
-		site = new HE_Mesh(creator);
+		site_ = new HE_Mesh(creator);
 	}
 
+	/**
+	 * import forbid area info
+	 */
 	public void importForbid() {
 		/**
 		 * import forbid area
@@ -330,15 +377,21 @@ public class PSite {
 
 	}
 
+	/**
+	 * draw site
+	 * 
+	 * @param app
+	 * @param wrender
+	 */
 	public void draw(PApplet app, WB_Render wrender) {
 
 		// draw site
 		app.pushStyle();
 		app.strokeWeight(1);
-		wrender.drawEdges(site);
+		wrender.drawEdges(site_);
 		app.noStroke();
 		app.fill(255, 128, 128);
-		wrender.drawFaces(site);
+		wrender.drawFaces(site_);
 
 		app.popStyle();
 
