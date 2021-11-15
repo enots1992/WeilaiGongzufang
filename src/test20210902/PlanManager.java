@@ -3,6 +3,7 @@ package test20210902;
 import gui.CameraController;
 import igeo.ICurve;
 import igeo.IG;
+import jtsUtil.JTSRender;
 import processing.core.PApplet;
 import wblut.processing.WB_Render;
 
@@ -16,13 +17,21 @@ public class PlanManager {
 		site = new PSite();
 		site.openFile(path);
 	}
-	
+
 	public void generateRoad() {
 		site.generateRoad();
 	}
 
-	public void draw(PApplet app, WB_Render render) {
-		site.draw(app, render);
+	public void nextEdge() {
+		site.drawNextEdge();
+	}
+
+	public void nextFace() {
+		site.drawNextFace();
+	}
+
+	public void draw(PApplet app, WB_Render render, JTSRender jrender) {
+		site.draw(app, render, jrender, true, true);
 	}
 
 }

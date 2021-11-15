@@ -2,6 +2,7 @@ package test20210902;
 
 import gui.CameraController;
 import igeo.IG;
+import jtsUtil.JTSRender;
 import processing.core.PApplet;
 import wblut.processing.WB_Render;
 
@@ -10,6 +11,7 @@ public class Test20210902 extends PApplet {
 	String path = "E:\\workspace\\30#WeiLai\\data\\01.3dm";
 	CameraController cam;
 	WB_Render render;
+	JTSRender jrender;
 
 	public void setup() {
 		size(800, 600, P3D);
@@ -19,13 +21,14 @@ public class Test20210902 extends PApplet {
 		manager = new PlanManager();
 		manager.openSite(path);
 		render = new WB_Render(this);
+		jrender = new JTSRender(this);
 	}
 
 	public void draw() {
 		background(255, 255, 255);
 
 		cam.drawSystem(10000);
-		manager.draw(this, render);
+		manager.draw(this, render, jrender);
 	}
 
 	public void keyPressed() {
@@ -44,6 +47,14 @@ public class Test20210902 extends PApplet {
 			cam.top();
 			System.out.println("view:top");
 			manager.generateRoad();
+			break;
+		case 'E':
+			System.out.println("draw next edge");
+			manager.nextEdge();
+			break;
+		case 'F':
+			System.out.println("draw next face");
+			manager.nextFace();
 			break;
 
 		}

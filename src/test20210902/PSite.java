@@ -6,14 +6,20 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 import Vec.Vec;
+import Vec.dist.Intersection3d;
 import igeo.ICurve;
 import igeo.IG;
 import igeo.IVec;
+import jtsUtil.JTSRender;
 import processing.core.PApplet;
 import wblut.geom.WB_Coord;
+import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Polygon;
+import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HEC_FromPolygons;
 import wblut.hemesh.HEC_Polygon;
+import wblut.hemesh.HE_Face;
+import wblut.hemesh.HE_Halfedge;
 import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Vertex;
 import wblut.processing.WB_Render;
@@ -64,17 +70,180 @@ public class PSite {
 		updateSite();
 	}
 
+	public IntersectionInfo getSiteLineIntersection(Vec[] line) {
+		IntersectionInfo out = null;
+		for (HE_Halfedge e : site_.getBoundaryHalfedges()) {
+			Vec a = line[0];
+			Vec b = line[1];
+			Vec c = new Vec(e.getStartVertex());
+			Vec d = new Vec(e.getEndVertex());
+			Vec intersection[] = Intersection3d.get2SegIntersection3d(a, b.subInstance(a), c, d.subInstance(c));
+
+			if (this.vecEqual(intersection[0], intersection[1])) {
+				out = new IntersectionInfo(intersection[0], e);
+			}
+		}
+
+		return out;
+	}
+
 	/**
 	 * update sites
 	 */
-	public void updateSite() {
+	Vec intersection0, intersection2, intersection3;
 
-		ArrayList<WB_Polygon> ps = new ArrayList<WB_Polygon>();
-		HEC_FromPolygons creator = new HEC_FromPolygons();
-		creator.setPolygons(ps);
+	ArrayList<WB_Polygon> qs = new ArrayList<WB_Polygon>();
+
+	public void updateSite() {
+		ArrayList<HE_Vertex> vs = new ArrayList<HE_Vertex>();
+		vs.addAll(site_.getVertices());
+		int[][] fs = new int[3][];
+
+		WB_GeometryFactory gf = WB_GeometryFactory.instance();
+		ArrayList<HE_Vertex> points = new ArrayList<HE_Vertex>();
+
+		IntersectionInfo i0 = getSiteLineIntersection(roads[0]);
+		IntersectionInfo i2 = getSiteLineIntersection(roads[2]);
+		IntersectionInfo i3 = getSiteLineIntersection(roads[3]);
+
+		i0.e.setLabel(11);
+		i2.e.setLabel(12);
+		i3.e.setLabel(13);
+
+		boolean end = false;
+
+		// p1 intersection
+		intersection0 = i0.v;
+
+		// p2 intersection
+
+		intersection2 = i2.v;
+		// p3 intersection
+
+		intersection3 = i3.v;
+
+		HE_Vertex v0 = intersection0.getHE_Vertex();
+		HE_Vertex v2 = intersection2.getHE_Vertex();
+		HE_Vertex v3 = intersection3.getHE_Vertex();
+		HE_Vertex va = roads[1][0].getHE_Vertex();
+		HE_Vertex vb = roads[1][1].getHE_Vertex();
+
+		vs.add(v0);
+		vs.add(v2);
+		vs.add(v3);
+		vs.add(va);
+		vs.add(vb);
+
+		// set polygon points
+		// p1
+		end = false;
+		HE_Halfedge e1 = i0.e;
+		HE_Halfedge e1_ = e1;
+		points.add(v3);
+		points.add(vb);
+		points.add(va);
+		points.add(v0);
+		points.add(e1.getEndVertex());
+
+		do {
+			if (e1_.getLabel() == 13) {
+//				points.add(e1_.getEndVertex());
+				end = true;
+			} else {
+				e1_ = e1_.getNextInFace();
+				points.add(e1_.getEndVertex());
+			}
+
+		} while (end == false);
+		int[] index_p1 = new int[points.size()];
+		for (int i = 0; i < points.size(); i++) {
+			HE_Vertex v = points.get(i);
+			index_p1[i] = vs.indexOf(v);
+		}
+		fs[0] = index_p1;
+		WB_Polygon p1 = gf.createSimplePolygon(points);
+		qs.add(p1);
+
+		// p2
+		end = false;
+		points = new ArrayList<HE_Vertex>();
+		HE_Halfedge e2 = i3.e;
+		HE_Halfedge e2_ = e2;
+		points.add(v2);
+		points.add(vb);
+		points.add(v3);
+		points.add(e2.getEndVertex());
+
+		do {
+			if (e2_.getLabel() == 12) {
+//				points.add(e2_.getStartVertex());
+				end = true;
+			} else {
+				e2_ = e2_.getNextInFace();
+				points.add(e2_.getEndVertex());
+			}
+
+		} while (end == false);
+
+		int[] index_p2 = new int[points.size()];
+		for (int i = 0; i < points.size(); i++) {
+			HE_Vertex v = points.get(i);
+			index_p2[i] = vs.indexOf(v);
+		}
+		fs[1] = index_p2;
+
+		WB_Polygon p2 = gf.createSimplePolygon(points);
+		qs.add(p2);
+
+		// p3
+		end = false;
+		points = new ArrayList<HE_Vertex>();
+		HE_Halfedge e3 = i2.e;
+		HE_Halfedge e3_ = e3;
+
+		points.add(v0);
+		points.add(va);
+		points.add(vb);
+		points.add(v2);
+		points.add(e3.getEndVertex());
+
+		do {
+			if (e3_.getLabel() == 11) {
+//				points.add(e3_.getEndVertex());
+				end = true;
+			} else {
+				e3_ = e3_.getNextInFace();
+				points.add(e3_.getEndVertex());
+			}
+
+		} while (end == false);
+
+		int[] index_p3 = new int[points.size()];
+		for (int i = 0; i < points.size(); i++) {
+			HE_Vertex v = points.get(i);
+			index_p3[i] = vs.indexOf(v);
+		}
+		fs[2] = index_p3;
+
+		WB_Polygon p3 = gf.createSimplePolygon(points);
+		qs.add(p3);
+
+		// set polygons
+		HEC_FromFacelist creator = new HEC_FromFacelist();
+		creator.setVertices(vs);
+		creator.setFaces(fs);
+		HEC_FromPolygons creatorp = new HEC_FromPolygons();
+		creatorp.setPolygons(qs);
+
 		site = new HE_Mesh(creator);
 
+		f = site.getFaces().get(selectedFaceIndex);
+
+		System.out.println("site size:" + site.getFaces().size());
+
 	}
+
+	private int selectedFaceIndex = 0;
 
 	/**
 	 * set roads
@@ -298,6 +467,7 @@ public class PSite {
 		WB_Polygon poly = new WB_Polygon(cs);
 		HEC_Polygon creator = new HEC_Polygon(poly, 0);
 		site_ = new HE_Mesh(creator);
+		e = site_.getBoundaryHalfedges().get(0);
 	}
 
 	/**
@@ -368,13 +538,32 @@ public class PSite {
 		}
 	}
 
+	private double threshold = 0.00000001;
+
 	public boolean vecEqual(Vec v1, Vec v2) {
-		if (v1.x == v2.x && v1.x == v2.x && v1.y == v2.y && v1.z == v2.z) {
+		if (Math.abs(v1.x - v2.x) < threshold && Math.abs(v1.y - v2.y) < threshold
+				&& Math.abs(v1.z - v2.z) < threshold) {
 			return true;
 		} else {
 			return false;
 		}
 
+	}
+
+	private HE_Halfedge e;
+	private HE_Face f;
+
+	public void drawNextEdge() {
+		e = e.getNextInFace();
+
+	}
+
+	public void drawNextFace() {
+		this.selectedFaceIndex++;
+		selectedFaceIndex = selectedFaceIndex % site.getFaces().size();
+		f = site.getFaces().get(selectedFaceIndex);
+
+		e = f.getFaceEdges().get(0);
 	}
 
 	/**
@@ -383,15 +572,58 @@ public class PSite {
 	 * @param app
 	 * @param wrender
 	 */
-	public void draw(PApplet app, WB_Render wrender) {
+	public void draw(PApplet app, WB_Render wrender, JTSRender jrender, boolean drawSelectEdge,
+			boolean drawSelectFace) {
+		// draw selected edge
+		if (drawSelectEdge) {
+			app.pushStyle();
+			app.strokeWeight(10);
+			app.stroke(0, 128, 255);
+			wrender.drawEdge(e);
+			app.popStyle();
+		}
+		if (drawSelectFace) {
+			app.pushStyle();
+			app.stroke(0, 255, 128);
+			wrender.drawFace(f);
+			app.popStyle();
+		}
 
 		// draw site
 		app.pushStyle();
+
+//		app.strokeWeight(1);
+//		wrender.drawEdges(site_);
+//		app.noStroke();
+//		app.fill(255, 0, 0);
+//		wrender.drawFaces(site_);
+
 		app.strokeWeight(1);
-		wrender.drawEdges(site_);
+		wrender.drawEdges(site);
 		app.noStroke();
 		app.fill(255, 128, 128);
-		wrender.drawFaces(site_);
+		wrender.drawFaces(site);
+
+//		app.fill(255, 128, 0);
+//		app.strokeWeight(5);
+//		app.stroke(0);
+//		for (WB_Polygon p : qs) {
+//			app.beginShape();
+//
+//			for (int i = 0; i < p.getPoints().size(); i++) {
+//				WB_Coord v0 = p.getPoint(i);
+//				app.vertex(v0.xf(), v0.yf());
+//
+//			}
+//			app.endShape();
+//
+//			for (int i = 0; i < p.getPoints().size(); i++) {
+//				WB_Coord v0 = p.getPoint(i);
+//				WB_Coord v1 = p.getPoint((i + 1) % p.getPoints().size());
+//				app.line(v0.xf(), v0.yf(), v1.xf(), v1.yf());
+//
+//			}
+//		}
 
 		app.popStyle();
 
@@ -429,10 +661,25 @@ public class PSite {
 			for (Vec[] vv : roads) {
 				app.line((float) vv[0].x, (float) vv[0].y, (float) vv[1].x, (float) vv[1].y);
 			}
+			app.strokeWeight(10);
+			app.point(intersection0.xf(), intersection0.yf(), intersection0.zf());
+			app.point(intersection2.xf(), intersection2.yf(), intersection2.zf());
+			app.point(intersection3.xf(), intersection3.yf(), intersection3.zf());
 
 			app.popStyle();
 		}
 
+	}
+
+	private class IntersectionInfo {
+		Vec v;
+		HE_Halfedge e;
+
+		private IntersectionInfo(Vec v, HE_Halfedge e) {
+			this.v = v;
+			this.e = e;
+
+		}
 	}
 
 }
