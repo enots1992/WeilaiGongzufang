@@ -7,6 +7,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 import Vec.Vec;
 import Vec.dist.Intersection3d;
+import gui.CameraController;
 import igeo.ICurve;
 import igeo.IG;
 import igeo.IVec;
@@ -93,11 +94,14 @@ public class PSite {
 	Vec intersection0, intersection2, intersection3;
 
 	ArrayList<WB_Polygon> qs = new ArrayList<WB_Polygon>();
+	ArrayList<HE_Vertex> vs = new ArrayList<HE_Vertex>();
+	int[][] fs = new int[3][];
 
 	public void updateSite() {
-		ArrayList<HE_Vertex> vs = new ArrayList<HE_Vertex>();
-		vs.addAll(site_.getVertices());
-		int[][] fs = new int[3][];
+
+		for (HE_Vertex v : site_.getVertices()) {
+			vs.add(v);
+		}
 
 		WB_GeometryFactory gf = WB_GeometryFactory.instance();
 		ArrayList<HE_Vertex> points = new ArrayList<HE_Vertex>();
@@ -146,7 +150,7 @@ public class PSite {
 		points.add(e1.getEndVertex());
 
 		do {
-			if (e1_.getLabel() == 13) {
+			if (e1_.getNextInFace().getLabel() == 13) {
 //				points.add(e1_.getEndVertex());
 				end = true;
 			} else {
@@ -155,13 +159,13 @@ public class PSite {
 			}
 
 		} while (end == false);
-		int[] index_p1 = new int[points.size()];
+		fs[0] = new int[points.size()];
 		for (int i = 0; i < points.size(); i++) {
 			HE_Vertex v = points.get(i);
-			index_p1[i] = vs.indexOf(v);
+			fs[0][i] = vs.indexOf(v);
 		}
-		fs[0] = index_p1;
-		WB_Polygon p1 = gf.createSimplePolygon(points);
+
+		WB_Polygon p1 = gf.createSimplePolygon(getHE_Vertex_Instance(points));
 		qs.add(p1);
 
 		// p2
@@ -175,7 +179,7 @@ public class PSite {
 		points.add(e2.getEndVertex());
 
 		do {
-			if (e2_.getLabel() == 12) {
+			if (e2_.getNextInFace().getLabel() == 12) {
 //				points.add(e2_.getStartVertex());
 				end = true;
 			} else {
@@ -185,14 +189,13 @@ public class PSite {
 
 		} while (end == false);
 
-		int[] index_p2 = new int[points.size()];
+		fs[1] = new int[points.size()];
 		for (int i = 0; i < points.size(); i++) {
 			HE_Vertex v = points.get(i);
-			index_p2[i] = vs.indexOf(v);
+			fs[1][i] = vs.indexOf(v);
 		}
-		fs[1] = index_p2;
 
-		WB_Polygon p2 = gf.createSimplePolygon(points);
+		WB_Polygon p2 = gf.createSimplePolygon(getHE_Vertex_Instance(points));
 		qs.add(p2);
 
 		// p3
@@ -208,7 +211,7 @@ public class PSite {
 		points.add(e3.getEndVertex());
 
 		do {
-			if (e3_.getLabel() == 11) {
+			if (e3_.getNextInFace().getLabel() == 11) {
 //				points.add(e3_.getEndVertex());
 				end = true;
 			} else {
@@ -218,29 +221,55 @@ public class PSite {
 
 		} while (end == false);
 
-		int[] index_p3 = new int[points.size()];
+		fs[2] = new int[points.size()];
 		for (int i = 0; i < points.size(); i++) {
 			HE_Vertex v = points.get(i);
-			index_p3[i] = vs.indexOf(v);
+			fs[2][i] = vs.indexOf(v);
 		}
-		fs[2] = index_p3;
 
-		WB_Polygon p3 = gf.createSimplePolygon(points);
+		WB_Polygon p3 = gf.createSimplePolygon(getHE_Vertex_Instance(points));
 		qs.add(p3);
 
 		// set polygons
 		HEC_FromFacelist creator = new HEC_FromFacelist();
-		creator.setVertices(vs);
+		ArrayList<HE_Vertex> vvs = new ArrayList<HE_Vertex>();
+		for (HE_Vertex v : vs) {
+			HE_Vertex v_ = new HE_Vertex(v.xd(), v.yd(), v.zd());
+			vvs.add(v_);
+		}
+		creator.setVertices(vvs);
 		creator.setFaces(fs);
 		HEC_FromPolygons creatorp = new HEC_FromPolygons();
 		creatorp.setPolygons(qs);
 
-		site = new HE_Mesh(creator);
+		site = new HE_Mesh(creatorp);
 
 		f = site.getFaces().get(selectedFaceIndex);
 
+		for (int[] ids : fs) {
+			System.out.println("");
+			for (int id : ids) {
+				System.out.println("id:" + id);
+			}
+		}
+
 		System.out.println("site size:" + site.getFaces().size());
 
+//		for (WB_Polygon p : qs) {
+//			System.out.println("=========new polygon===========");
+//			for (WB_Coord c : p.getPoints()) {
+//				new Vec(c.xd(), c.yd(), c.zd()).print("coord");
+//			}
+//		}
+
+	}
+
+	private ArrayList<HE_Vertex> getHE_Vertex_Instance(ArrayList<HE_Vertex> vs) {
+		ArrayList<HE_Vertex> vvs = new ArrayList<HE_Vertex>();
+		for (HE_Vertex v : vs) {
+			vvs.add(new HE_Vertex(v.xd(), v.yd(), v.zd()));
+		}
+		return vvs;
 	}
 
 	private int selectedFaceIndex = 0;
@@ -379,8 +408,6 @@ public class PSite {
 
 		double[] outseg = new double[2];
 
-		int ida = -1, idb = -1;
-
 		int pos = 0;
 
 		int count = -1;
@@ -389,28 +416,18 @@ public class PSite {
 				pos = 0;
 				count++;
 			} else if (ds[i] == a) {
-				ida = i;
 				pos = 1;
 
 			} else if (ds[i] < b) {
 				pos = 2;
 				count++;
 			} else if (ds[i] == b) {
-				idb = i;
 				pos = 3;
 			} else {
 				pos = 4;
 				count++;
 			}
 
-//			if (i % 2 == 0) {
-//				outseg[0] = ds[i];
-//			} else {
-//				outseg[1] = ds[i];
-//				out.add(outseg);
-//				outseg = new double[2];
-//
-//			}
 			if (outseg[0] == 0) {
 				outseg[0] = ds[i];
 
@@ -441,11 +458,12 @@ public class PSite {
 			}
 
 		}
-		System.out.println("//union segs");
+		System.out.println("");
+		System.out.print("//union segs");
 		for (double[] s : out) {
-			System.out.println("[" + s[0] + "," + s[1] + "]");
+			System.out.print("[" + s[0] + "," + s[1] + "]");
 		}
-		System.out.println("union segs//");
+		System.out.print("union segs//");
 		return out;
 
 	}
@@ -553,6 +571,19 @@ public class PSite {
 	private HE_Halfedge e;
 	private HE_Face f;
 
+//	public void drawNextEdge() {
+//		e = e.getNextInFace();
+//
+//	}
+//
+//	public void drawNextFace() {
+//		this.selectedFaceIndex++;
+//		selectedFaceIndex = selectedFaceIndex % site.getFaces().size();
+//		f = site.getFaces().get(selectedFaceIndex);
+//
+//		e = f.getFaceEdges().get(0);
+//	}
+
 	public void drawNextEdge() {
 		e = e.getNextInFace();
 
@@ -572,58 +603,45 @@ public class PSite {
 	 * @param app
 	 * @param wrender
 	 */
-	public void draw(PApplet app, WB_Render wrender, JTSRender jrender, boolean drawSelectEdge,
-			boolean drawSelectFace) {
-		// draw selected edge
-		if (drawSelectEdge) {
-			app.pushStyle();
-			app.strokeWeight(10);
-			app.stroke(0, 128, 255);
-			wrender.drawEdge(e);
-			app.popStyle();
-		}
-		if (drawSelectFace) {
-			app.pushStyle();
-			app.stroke(0, 255, 128);
-			wrender.drawFace(f);
-			app.popStyle();
-		}
+	public void draw(PApplet app, WB_Render wrender, JTSRender jrender, boolean drawSelectEdge, boolean drawSelectFace,
+			CameraController cam) {
 
-		// draw site
 		app.pushStyle();
+		// draw site
+		if (false) {
+			app.strokeWeight(1);
+			wrender.drawEdges(site_);
+			app.noStroke();
+			app.fill(255, 0, 0);
+			wrender.drawFaces(site_);
+		}
+		// draw site_
+		if (true) {
+			app.strokeWeight(1);
+			wrender.drawEdges(site);
+			app.noStroke();
+			app.fill(255, 128, 128);
+			wrender.drawFaces(site);
+		}
 
-//		app.strokeWeight(1);
-//		wrender.drawEdges(site_);
-//		app.noStroke();
-//		app.fill(255, 0, 0);
-//		wrender.drawFaces(site_);
-
-		app.strokeWeight(1);
-		wrender.drawEdges(site);
-		app.noStroke();
-		app.fill(255, 128, 128);
-		wrender.drawFaces(site);
-
-//		app.fill(255, 128, 0);
-//		app.strokeWeight(5);
-//		app.stroke(0);
-//		for (WB_Polygon p : qs) {
-//			app.beginShape();
-//
-//			for (int i = 0; i < p.getPoints().size(); i++) {
-//				WB_Coord v0 = p.getPoint(i);
-//				app.vertex(v0.xf(), v0.yf());
-//
-//			}
-//			app.endShape();
-//
-//			for (int i = 0; i < p.getPoints().size(); i++) {
-//				WB_Coord v0 = p.getPoint(i);
-//				WB_Coord v1 = p.getPoint((i + 1) % p.getPoints().size());
-//				app.line(v0.xf(), v0.yf(), v1.xf(), v1.yf());
-//
-//			}
-//		}
+		if (false) {
+			// draw selected edge
+			if (drawSelectEdge) {
+				app.pushStyle();
+				app.strokeWeight(10);
+				app.stroke(0, 128, 255);
+				wrender.drawEdge(e);
+				app.popStyle();
+			}
+			// draw selected face
+			if (drawSelectFace) {
+				app.pushStyle();
+				app.fill(255, 0, 255);
+				app.stroke(255, 255, 128);
+				wrender.drawFace(f);
+				app.popStyle();
+			}
+		}
 
 		app.popStyle();
 
@@ -678,6 +696,10 @@ public class PSite {
 		private IntersectionInfo(Vec v, HE_Halfedge e) {
 			this.v = v;
 			this.e = e;
+			System.out.println("===new intersection===");
+			v.print("intersection point");
+			new Vec(e.getStartVertex()).print("e start");
+			new Vec(e.getEndVertex()).print("e end");
 
 		}
 	}

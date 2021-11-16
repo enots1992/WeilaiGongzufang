@@ -30,8 +30,8 @@ public class PlanManager {
 		site.drawNextFace();
 	}
 
-	public void draw(PApplet app, WB_Render render, JTSRender jrender) {
-		site.draw(app, render, jrender, true, true);
+	public void draw(PApplet app, WB_Render render, JTSRender jrender, CameraController cam) {
+		site.draw(app, render, jrender, true, true, cam);
 	}
 
 }

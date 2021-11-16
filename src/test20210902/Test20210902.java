@@ -28,7 +28,7 @@ public class Test20210902 extends PApplet {
 		background(255, 255, 255);
 
 		cam.drawSystem(10000);
-		manager.draw(this, render, jrender);
+		manager.draw(this, render, jrender, cam);
 	}
 
 	public void keyPressed() {
