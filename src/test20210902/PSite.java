@@ -33,6 +33,7 @@ public class PSite {
 	public double[] roadRangeX, roadRangeY;
 	public ArrayList<ArrayList<Vec>> forbid;
 	boolean drawRoad = false;
+	public ArrayList<Block> blocks;
 
 	double road_y1, road_y2, road_x1;
 	Vec[][] roads;
@@ -51,9 +52,20 @@ public class PSite {
 		importForbid();
 		generateRoad();
 		separateSite();
+		generateBlocks();
 
 		for (ArrayList<Vec> l : forbid) {
 			System.out.println(l.size());
+		}
+
+	}
+
+	/**
+	 * generate blocks by faces
+	 */
+	public void generateBlocks() {
+		for (HE_Face f : site.getFaces()) {
+			blocks.add(new Block(f));
 		}
 
 	}
@@ -246,12 +258,12 @@ public class PSite {
 
 		f = site.getFaces().get(selectedFaceIndex);
 
-		for (int[] ids : fs) {
-			System.out.println("");
-			for (int id : ids) {
-				System.out.println("id:" + id);
-			}
-		}
+//		for (int[] ids : fs) {
+//			System.out.println("");
+//			for (int id : ids) {
+//				System.out.println("id:" + id);
+//			}
+//		}
 
 		System.out.println("site size:" + site.getFaces().size());
 
@@ -458,12 +470,12 @@ public class PSite {
 			}
 
 		}
-		System.out.println("");
-		System.out.print("//union segs");
-		for (double[] s : out) {
-			System.out.print("[" + s[0] + "," + s[1] + "]");
-		}
-		System.out.print("union segs//");
+//		System.out.println("");
+//		System.out.print("//union segs");
+//		for (double[] s : out) {
+//			System.out.print("[" + s[0] + "," + s[1] + "]");
+//		}
+//		System.out.print("union segs//");
 		return out;
 
 	}
@@ -674,7 +686,7 @@ public class PSite {
 			app.line(-100, (float) roadRangeY[0], 500, (float) roadRangeY[0]);
 			app.line(-100, (float) roadRangeY[1], 500, (float) roadRangeY[1]);
 
-			app.strokeWeight(3);
+			app.strokeWeight(2);
 
 			for (Vec[] vv : roads) {
 				app.line((float) vv[0].x, (float) vv[0].y, (float) vv[1].x, (float) vv[1].y);
@@ -696,10 +708,10 @@ public class PSite {
 		private IntersectionInfo(Vec v, HE_Halfedge e) {
 			this.v = v;
 			this.e = e;
-			System.out.println("===new intersection===");
-			v.print("intersection point");
-			new Vec(e.getStartVertex()).print("e start");
-			new Vec(e.getEndVertex()).print("e end");
+//			System.out.println("===new intersection===");
+//			v.print("intersection point");
+//			new Vec(e.getStartVertex()).print("e start");
+//			new Vec(e.getEndVertex()).print("e end");
 
 		}
 	}

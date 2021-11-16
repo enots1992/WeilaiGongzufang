@@ -22,6 +22,7 @@ public class PlanManager {
 		site.generateRoad();
 	}
 
+	///selection
 	public void nextEdge() {
 		site.drawNextEdge();
 	}
