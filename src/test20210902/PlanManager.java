@@ -22,7 +22,7 @@ public class PlanManager {
 		site.generateRoad();
 	}
 
-	///selection
+	/// selection
 	public void nextEdge() {
 		site.drawNextEdge();
 	}
@@ -31,8 +31,9 @@ public class PlanManager {
 		site.drawNextFace();
 	}
 
-	public void draw(PApplet app, WB_Render render, JTSRender jrender, CameraController cam) {
-		site.draw(app, render, jrender, true, true, cam);
+	public void draw(PApplet app, WB_Render wrender, JTSRender jrender, CameraController cam) {
+		site.draw(app, wrender, jrender, true, true, cam);
+		site.drawBlock(app, wrender, jrender);
 	}
 
 }

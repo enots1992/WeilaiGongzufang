@@ -25,9 +25,15 @@ import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Vertex;
 import wblut.processing.WB_Render;
 
+/**
+ * site,road
+ * 
+ * @author 1
+ *
+ */
 public class PSite {
 
-	public HE_Mesh site_, site;
+	public HE_Mesh site_boundray, site_all, site;
 	public Vec[] boundary;
 
 	public double[] roadRangeX, roadRangeY;
@@ -64,8 +70,9 @@ public class PSite {
 	 * generate blocks by faces
 	 */
 	public void generateBlocks() {
+		blocks = new ArrayList<Block>();
 		for (HE_Face f : site.getFaces()) {
-			blocks.add(new Block(f));
+			blocks.add(new Block(f, halfLength));
 		}
 
 	}
@@ -85,7 +92,7 @@ public class PSite {
 
 	public IntersectionInfo getSiteLineIntersection(Vec[] line) {
 		IntersectionInfo out = null;
-		for (HE_Halfedge e : site_.getBoundaryHalfedges()) {
+		for (HE_Halfedge e : site_boundray.getBoundaryHalfedges()) {
 			Vec a = line[0];
 			Vec b = line[1];
 			Vec c = new Vec(e.getStartVertex());
@@ -111,7 +118,7 @@ public class PSite {
 
 	public void updateSite() {
 
-		for (HE_Vertex v : site_.getVertices()) {
+		for (HE_Vertex v : site_boundray.getVertices()) {
 			vs.add(v);
 		}
 
@@ -496,8 +503,8 @@ public class PSite {
 
 		WB_Polygon poly = new WB_Polygon(cs);
 		HEC_Polygon creator = new HEC_Polygon(poly, 0);
-		site_ = new HE_Mesh(creator);
-		e = site_.getBoundaryHalfedges().get(0);
+		site_boundray = new HE_Mesh(creator);
+		e = site_boundray.getBoundaryHalfedges().get(0);
 	}
 
 	/**
@@ -605,8 +612,7 @@ public class PSite {
 		this.selectedFaceIndex++;
 		selectedFaceIndex = selectedFaceIndex % site.getFaces().size();
 		f = site.getFaces().get(selectedFaceIndex);
-
-		e = f.getFaceEdges().get(0);
+		e = f.getFaceHalfedges().get(0);
 	}
 
 	/**
@@ -619,15 +625,15 @@ public class PSite {
 			CameraController cam) {
 
 		app.pushStyle();
-		// draw site
+		// draw site_boundray import
 		if (false) {
 			app.strokeWeight(1);
-			wrender.drawEdges(site_);
+			wrender.drawEdges(site_boundray);
 			app.noStroke();
 			app.fill(255, 0, 0);
-			wrender.drawFaces(site_);
+			wrender.drawFaces(site_boundray);
 		}
-		// draw site_
+		// draw site by blocks
 		if (true) {
 			app.strokeWeight(1);
 			wrender.drawEdges(site);
@@ -699,6 +705,12 @@ public class PSite {
 			app.popStyle();
 		}
 
+	}
+
+	public void drawBlock(PApplet app, WB_Render wrender, JTSRender jrender) {
+		for (Block b : blocks) {
+			b.drawBlock(jrender, app);
+		}
 	}
 
 	private class IntersectionInfo {
