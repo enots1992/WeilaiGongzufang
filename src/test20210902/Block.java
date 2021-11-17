@@ -53,7 +53,7 @@ public class Block {
 		cs[f.getFaceVertices().size()] = cs[0];
 		site = gf.createPolygon(cs);
 		block = gf.createPolygon(cs);
-		System.out.println("face edge size" + f.getFaceEdges().size());
+//		System.out.println("face edge size" + f.getFaceEdges().size());
 		for (HE_Halfedge e : f.getFaceHalfedges()) {
 
 			if (e.getPair().getFace() == null) {

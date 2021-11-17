@@ -1,5 +1,6 @@
 package test20210902;
 
+import Vec.Vec;
 import gui.CameraController;
 import igeo.IG;
 import jtsUtil.JTSRender;
@@ -30,10 +31,27 @@ public class Test20210902 extends PApplet {
 		manager.draw(this, render, jrender, cam);
 	}
 
+	public void mousePressed() {
+		manager.setSelectedRoad();
+	}
+
 	public void keyPressed() {
 		switch (keyCode) {
+		case UP:
+			manager.changeRoad(new Vec(0, 5, 0));
+			break;
+		case DOWN:
+			manager.changeRoad(new Vec(0, -5, 0));
+			break;
+		case LEFT:
+			manager.changeRoad(new Vec(-5, 0, 0));
+			break;
+		case RIGHT:
+			manager.changeRoad(new Vec(5, 0, 0));
+			break;
+
 		case 'C':
-			//change road
+			// change road
 			manager.changeRoad();
 			break;
 		case 'T':
@@ -49,7 +67,6 @@ public class Test20210902 extends PApplet {
 
 			cam.top();
 			System.out.println("view:top");
-			manager.generateRoad();
 			break;
 		case 'E':
 			System.out.println("draw next edge");

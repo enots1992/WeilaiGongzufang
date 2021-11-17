@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 import Vec.Vec;
+import Vec.dist.Dist3d;
 import Vec.dist.Intersection3d;
 import gui.CameraController;
 import igeo.ICurve;
@@ -56,14 +57,74 @@ public class PSite {
 
 		importSite();
 		importForbid();
-		generateRoad();
+		generateRoadRange();
 		separateSite();
 		generateBlocks();
 
-		for (ArrayList<Vec> l : forbid) {
-			System.out.println(l.size());
-		}
+//		for (ArrayList<Vec> l : forbid) {
+//			System.out.println(l.size());
+//		}
 
+	}
+
+	public void applyChange() {
+		updateSite();
+		generateBlocks();
+	}
+
+	public void changeRoad(Vec v) {
+
+		for (int i = 0; i < 4; i++) {
+			Vec[] r = roads[i];
+			if (r == selectedRoad) {
+				Vec roadDir = r[0].subInstance(r[1]);
+
+				double angle = roadDir.getAngleBetween(v);
+				if (angle == Math.PI / 2) {
+
+					if (i == 1 || i == 2) {
+						double xx = roads[1][0].x + v.x;
+
+						if (xx > roadRangeX[1] - halfLength) {
+							xx = roadRangeX[1] - halfLength;
+						} else if (xx < roadRangeX[0] + halfLength) {
+							xx = roadRangeX[0] + halfLength;
+						}
+
+						roads[1][1].x = xx;
+						roads[2][1].x = xx;
+					} else {
+						double yy = r[0].y + v.y;
+
+						if (i == 0) {
+
+							double y3 = roads[3][0].y;
+							if (yy < y3) {
+								yy = y3;
+							}
+
+						} else if (i == 3) {
+							double y0 = roads[0][0].y;
+							if (yy > y0) {
+								yy = y0;
+							}
+						}
+
+						if (yy > roadRangeY[1] - halfLength) {
+							yy = roadRangeY[1] - halfLength;
+						} else if (yy < roadRangeY[0] + halfLength) {
+							yy = roadRangeY[0] + halfLength;
+						}
+
+						r[0].y = yy;
+						r[1].y = yy;
+
+					}
+
+				}
+			}
+
+		}
 	}
 
 	/**
@@ -74,6 +135,10 @@ public class PSite {
 		for (HE_Face f : site.getFaces()) {
 			blocks.add(new Block(f, halfLength));
 		}
+		for (int i = 0; i < blocks.size(); i++) {
+			System.out.println("block" + i);
+			blocks.get(i).printBlockInfo();
+		}
 
 	}
 
@@ -81,7 +146,7 @@ public class PSite {
 	 * set road position
 	 */
 	public void separateSite() {
-		roads = new Vec[4][];
+
 		road_y2 = roadRangeY[1] - halfLength;
 		road_y1 = roadRangeY[0] + halfLength;
 		road_x1 = (roadRangeX[0] + roadRangeX[1]) / 2;
@@ -112,12 +177,14 @@ public class PSite {
 	 */
 	Vec intersection0, intersection2, intersection3;
 
-	ArrayList<WB_Polygon> qs = new ArrayList<WB_Polygon>();
-	ArrayList<HE_Vertex> vs = new ArrayList<HE_Vertex>();
-	int[][] fs = new int[3][];
+	ArrayList<WB_Polygon> qs;
+	ArrayList<HE_Vertex> vs;
+	int[][] fs;
 
 	public void updateSite() {
-
+		qs = new ArrayList<WB_Polygon>();
+		vs = new ArrayList<HE_Vertex>();
+		fs = new int[3][];
 		for (HE_Vertex v : site_boundray.getVertices()) {
 			vs.add(v);
 		}
@@ -272,7 +339,7 @@ public class PSite {
 //			}
 //		}
 
-		System.out.println("site size:" + site.getFaces().size());
+//		System.out.println("site size:" + site.getFaces().size());
 
 //		for (WB_Polygon p : qs) {
 //			System.out.println("=========new polygon===========");
@@ -297,6 +364,7 @@ public class PSite {
 	 * set roads
 	 */
 	public void updateRoadVecs() {
+		roads = new Vec[4][];
 		Vec v0 = new Vec(-100, road_y2);
 		Vec v1 = new Vec(road_x1, road_y2);
 		Vec v2 = new Vec(road_x1, road_y1);
@@ -313,7 +381,7 @@ public class PSite {
 	/**
 	 * get roadRange
 	 */
-	public void generateRoad() {
+	public void generateRoadRange() {
 		drawRoad = true;
 		ArrayList<double[]> boundaryx = new ArrayList<double[]>();
 		ArrayList<double[]> boundaryy = new ArrayList<double[]>();
@@ -601,6 +669,29 @@ public class PSite {
 
 	}
 
+	Vec[] currentRoad, selectedRoad;
+
+	public void setCurrentRoad(Vec v) {
+		double dist = Double.MAX_VALUE;
+		currentRoad = null;
+		for (Vec[] road : roads) {
+
+			double dist_ = Dist3d.getDist3d(v, road, true);
+			currentRoad = (dist < dist_) ? currentRoad : road;
+			dist = (dist < dist_) ? dist : dist_;
+		}
+
+		currentRoad = (dist < 10) ? currentRoad : null;
+	}
+
+	public void setSelectedRoad() {
+		if (currentRoad != null) {
+			selectedRoad = currentRoad;
+		} else {
+			selectedRoad = null;
+		}
+	}
+
 	private HE_Halfedge e;
 	private HE_Face f;
 
@@ -639,6 +730,16 @@ public class PSite {
 			CameraController cam) {
 
 		app.pushStyle();
+		if (currentRoad != null) {
+			app.strokeWeight(3);
+			app.stroke(255, 0, 0);
+			app.line(currentRoad[0].xf(), currentRoad[0].yf(), currentRoad[1].xf(), currentRoad[1].yf());
+		}
+		if (selectedRoad != null) {
+			app.strokeWeight(5);
+			app.stroke(0, 255, 0);
+			app.line(selectedRoad[0].xf(), selectedRoad[0].yf(), selectedRoad[1].xf(), selectedRoad[1].yf());
+		}
 		// draw site_boundray import
 		if (false) {
 			app.strokeWeight(1);
@@ -730,6 +831,7 @@ public class PSite {
 	}
 
 	public void drawBlock(PApplet app, WB_Render wrender, JTSRender jrender) {
+
 		for (Block b : blocks) {
 			b.drawBlock(jrender, app);
 		}
