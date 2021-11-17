@@ -22,7 +22,7 @@ import wblut.hemesh.HE_Vertex;
 public class Block {
 	private HE_Face f;
 	private double halfLength;
-	int[] fill;
+	int fill;
 	/**
 	 * all area
 	 */
@@ -39,7 +39,7 @@ public class Block {
 	public Block(HE_Face f, double halfLength) {
 		this.f = f;
 		this.halfLength = halfLength;
-		fill = new int[] { 255, 128, 0 };
+		fill = 0xffff8800;
 		update();
 	}
 
@@ -80,10 +80,12 @@ public class Block {
 		app.pushStyle();
 		app.strokeWeight(1);
 		app.stroke(0);
+		
+		jrender.setFill(fill);
+		jrender.draw(block);
 		jrender.setFill(128);
 		jrender.draw(road);
-		jrender.setFill(0xffff8800);
-		jrender.draw(block);
+		
 		app.popStyle();
 
 	}
@@ -93,23 +95,8 @@ public class Block {
 	 * 
 	 * @param fill int[]{r,g,b}
 	 */
-	public void setFill(int[] fill) {
-		this.fill[0] = fill[0];
-		this.fill[1] = fill[1];
-		this.fill[2] = fill[2];
-	}
-
-	/**
-	 * set block color
-	 * 
-	 * @param r
-	 * @param g
-	 * @param b
-	 */
-	public void setFill(int r, int g, int b) {
-		this.fill[0] = r;
-		this.fill[1] = g;
-		this.fill[2] = b;
+	public void setFill(int fill) {
+		this.fill = fill;
 	}
 
 	/**

@@ -9,6 +9,7 @@ import wblut.processing.WB_Render;
 
 public class PlanManager {
 	PSite site;
+	private boolean changeroad = false;
 
 	public PlanManager() {
 	}
@@ -29,6 +30,10 @@ public class PlanManager {
 
 	public void nextFace() {
 		site.drawNextFace();
+	}
+
+	public void changeRoad() {
+		changeroad = !changeroad;
 	}
 
 	public void draw(PApplet app, WB_Render wrender, JTSRender jrender, CameraController cam) {

@@ -492,7 +492,7 @@ public class PSite {
 	 */
 	public void importSite() {
 		/**
-		 * import site
+		 * import site-
 		 */
 		ArrayList<WB_Coord> cs = new ArrayList<WB_Coord>();
 
@@ -505,6 +505,20 @@ public class PSite {
 		HEC_Polygon creator = new HEC_Polygon(poly, 0);
 		site_boundray = new HE_Mesh(creator);
 		e = site_boundray.getBoundaryHalfedges().get(0);
+
+		/**
+		 * import site-all
+		 */
+		ArrayList<WB_Coord> cs2 = new ArrayList<WB_Coord>();
+
+		for (int i = 0; i < IG.layer("03").getCurves().length; i++) {
+			IVec pt = IG.layer("03").getCurves()[i].pt(0);
+			cs2.add(new HE_Vertex(pt.x, pt.y, pt.z));
+		}
+
+		WB_Polygon poly2 = new WB_Polygon(cs2);
+		HEC_Polygon creator2 = new HEC_Polygon(poly2, 0);
+		site_all = new HE_Mesh(creator2);
 	}
 
 	/**
@@ -632,6 +646,14 @@ public class PSite {
 			app.noStroke();
 			app.fill(255, 0, 0);
 			wrender.drawFaces(site_boundray);
+		}
+
+		if (true) {
+			app.strokeWeight(1);
+			wrender.drawEdges(site_all);
+			app.noStroke();
+			app.fill(64, 192, 64);
+			wrender.drawFaces(site_all);
 		}
 		// draw site by blocks
 		if (true) {

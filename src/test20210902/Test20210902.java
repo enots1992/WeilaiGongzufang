@@ -8,13 +8,13 @@ import wblut.processing.WB_Render;
 
 public class Test20210902 extends PApplet {
 	PlanManager manager;
-	String path = "E:\\workspace\\30#WeiLai\\data\\01.3dm";
+	String path = "E:\\workspace\\30#WeiLai\\data\\03.3dm";
 	CameraController cam;
 	WB_Render render;
 	JTSRender jrender;
 
 	public void setup() {
-		size(800, 600, P3D);
+		size(1200, 900, P3D);
 
 		cam = new CameraController(this, 1000);
 		cam.top();
@@ -26,13 +26,16 @@ public class Test20210902 extends PApplet {
 
 	public void draw() {
 		background(255, 255, 255);
-
-		cam.drawSystem(10000);
+		cam.drawSystem(1000);
 		manager.draw(this, render, jrender, cam);
 	}
 
 	public void keyPressed() {
 		switch (keyCode) {
+		case 'C':
+			//change road
+			manager.changeRoad();
+			break;
 		case 'T':
 			cam.top();
 			System.out.println("view:top");
