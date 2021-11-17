@@ -1,5 +1,7 @@
 package test20210902;
 
+import java.util.ArrayList;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -23,6 +25,7 @@ public class Block {
 	private HE_Face f;
 	private double halfLength;
 	int fill;
+	ArrayList<Building> buildings;
 	/**
 	 * all area
 	 */
@@ -80,12 +83,12 @@ public class Block {
 		app.pushStyle();
 		app.strokeWeight(1);
 		app.stroke(0);
-		
+
 		jrender.setFill(fill);
 		jrender.draw(block);
 		jrender.setFill(128);
 		jrender.draw(road);
-		
+
 		app.popStyle();
 
 	}
@@ -105,10 +108,11 @@ public class Block {
 	public void printBlockInfo() {
 		System.out.println("===block info===");
 
-		System.out.println("地块面积：");
-		System.out.println("道路面积：");
-		System.out.println("地块功能：");
-		System.out.println("建筑面积：");
+		System.out.println("总面积：" + f.getFaceArea() + "m2");
+		System.out.println("地块面积：" + this.block.getArea() + "m2");
+		System.out.println("道路面积：" + this.road.getArea() + "m2");
+//		System.out.println("地块功能：");
+//		System.out.println("建筑面积：");
 	}
 
 }

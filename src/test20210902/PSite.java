@@ -90,7 +90,7 @@ public class PSite {
 						} else if (xx < roadRangeX[0] + halfLength) {
 							xx = roadRangeX[0] + halfLength;
 						}
-
+						roads[1][0].x = xx;
 						roads[1][1].x = xx;
 						roads[2][1].x = xx;
 					} else {
