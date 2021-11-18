@@ -21,6 +21,15 @@ public class PlanManager {
 		site.openFile(path);
 	}
 
+	public void generateBuildings() {
+		site.generateBuildings();
+
+	}
+
+	public void optimizeBuildings() {
+
+	}
+
 	/// selection
 	public void nextEdge() {
 		site.drawNextEdge();

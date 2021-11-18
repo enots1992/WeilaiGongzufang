@@ -39,14 +39,50 @@ public class Block {
 	 */
 	Geometry block;
 
+	/**
+	 * 
+	 * @param f          HE_Face
+	 * @param halfLength 道路宽度的一半
+	 */
 	public Block(HE_Face f, double halfLength) {
 		this.f = f;
 		this.halfLength = halfLength;
 		fill = 0xffff8800;
-		update();
+		updateShape();
 	}
 
-	public void update() {
+	/**
+	 * 向地块中添加建筑
+	 * 
+	 * @param b
+	 */
+	public void addBuilding(Building b) {
+		this.buildings.add(b);
+		updateBuildingPosition();
+	}
+
+	/**
+	 * 向地块中添加建筑
+	 * 
+	 * @param bs
+	 */
+	public void addBuildng(ArrayList<Building> bs) {
+		this.buildings.addAll(bs);
+		updateBuildingPosition();
+	}
+
+	public boolean checkBuildingsInsideBlock() {
+		return true;
+	}
+
+	/**
+	 * 碰撞检测，房子之间保留符合规范的间距
+	 */
+	public void updateBuildingPosition() {
+
+	}
+
+	public void updateShape() {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] cs = new Coordinate[f.getFaceVertices().size() + 1];
 		for (int i = 0; i < f.getFaceVertices().size(); i++) {

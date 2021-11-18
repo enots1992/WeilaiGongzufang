@@ -67,6 +67,15 @@ public class PSite {
 
 	}
 
+	public void generateBuildings() {
+		for (Block b : blocks) {
+
+		}
+	}
+
+	/**
+	 * change road,than apply change
+	 */
 	public void applyChange() {
 		updateSite();
 		generateBlocks();
