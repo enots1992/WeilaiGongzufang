@@ -6,12 +6,14 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
 
 import Vec.Vec;
 import jtsUtil.JTSRender;
 import processing.core.PApplet;
+import test20210902.building.Building;
+import test20210902.building.Commercial;
+import test20210902.building.PublicRentalHouse;
+import test20210902.building.Residence;
 import wblut.hemesh.HE_Face;
 import wblut.hemesh.HE_Halfedge;
 import wblut.hemesh.HE_Vertex;
@@ -24,8 +26,9 @@ import wblut.hemesh.HE_Vertex;
 public class Block {
 	private HE_Face f;
 	private double halfLength;
-	int fill;
-	ArrayList<Building> buildings;
+	public int fill;
+	public ArrayList<Building> buildings;
+
 	/**
 	 * all area
 	 */
@@ -51,6 +54,23 @@ public class Block {
 		updateShape();
 	}
 
+	public void setBlockBuildings(String type, double minArea) {
+
+		switch (type) {
+		case "commercial":
+			this.addBuilding(new Commercial(this));
+			break;
+		case "publicRentalHouse":
+			this.addBuilding(new PublicRentalHouse(this));
+			break;
+		case "residence":
+			this.addBuilding(new Residence(this));
+			break;
+		case "kindergarten":
+			break;
+		}
+	}
+
 	/**
 	 * 向地块中添加建筑
 	 * 
@@ -71,6 +91,11 @@ public class Block {
 		updateBuildingPosition();
 	}
 
+	/**
+	 * check all building
+	 * 
+	 * @return
+	 */
 	public boolean checkBuildingsInsideBlock() {
 		return true;
 	}
@@ -82,6 +107,9 @@ public class Block {
 
 	}
 
+	/**
+	 * update shape of this block
+	 */
 	public void updateShape() {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] cs = new Coordinate[f.getFaceVertices().size() + 1];

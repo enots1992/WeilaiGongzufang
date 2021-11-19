@@ -1,13 +1,19 @@
-package test20210902;
+package test20210902.building;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 import Vec.Vec;
 import jtsUtil.JTSRender;
 import processing.core.PApplet;
+import test20210902.Block;
 import wblut.processing.WB_Render;
 
 public abstract class Building {
+
+	public static String commercial = "commercial";
+	public static String publicRentalHouse = "publicRentalHouse";
+	public static String residence = "residence";
+	public static String kindergarten = "kindergarten";
 
 	public Block block;
 	public Geometry boundary, buffer;
@@ -24,22 +30,25 @@ public abstract class Building {
 		this.block = block;
 	}
 
-	public void setDistanceBetweenBuilding(double x0, double x1, double y0, double y1) {
-		this.distanceBetweenBuilding = new double[] { x0, x1, y0, y1 };
-	}
-
-	public void setDistanceBetweenBuilding(double[] distance) {
-		this.distanceBetweenBuilding = distance;
-	}
-
-	public void setBoundary(Geometry boundary) {
-		this.boundary = boundary;
-	}
-
 	public Building(Block block, Geometry boundary) {
 		this.block = block;
 		this.boundary = boundary;
 
+	}
+
+	public Building setDistanceBetweenBuilding(double x0, double x1, double y0, double y1) {
+		this.distanceBetweenBuilding = new double[] { x0, x1, y0, y1 };
+		return this;
+	}
+
+	public Building setDistanceBetweenBuilding(double[] distance) {
+		this.distanceBetweenBuilding = distance;
+		return this;
+	}
+
+	public Building setBoundary(Geometry boundary) {
+		this.boundary = boundary;
+		return this;
 	}
 
 	public Block getBlock() {

@@ -14,6 +14,7 @@ import igeo.IG;
 import igeo.IVec;
 import jtsUtil.JTSRender;
 import processing.core.PApplet;
+import test20210902.building.Building;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Polygon;
@@ -68,9 +69,12 @@ public class PSite {
 	}
 
 	public void generateBuildings() {
-		for (Block b : blocks) {
+		blocks.get(0).setBlockBuildings(Building.commercial, 23736.45);
+		blocks.get(0).setBlockBuildings(Building.publicRentalHouse, 30000);
 
-		}
+		blocks.get(1).setBlockBuildings(Building.residence, 95826.84);
+		blocks.get(2).setBlockBuildings(Building.kindergarten, 5400);
+
 	}
 
 	/**
