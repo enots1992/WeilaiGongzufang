@@ -846,7 +846,7 @@ public class PSite {
 	public void drawBlock(PApplet app, WB_Render wrender, JTSRender jrender) {
 
 		for (Block b : blocks) {
-			b.drawBlock(jrender, app);
+			b.drawBlock(jrender, app, wrender);
 		}
 	}
 

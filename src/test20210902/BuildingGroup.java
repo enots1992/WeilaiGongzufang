@@ -92,7 +92,9 @@ public class BuildingGroup {
 	 * @param wrender wb render
 	 */
 	public void drawGroup(PApplet app, JTSRender jrender, WB_Render wrender) {
-
+		for (Building b : this.bs) {
+			b.drawBuilding(app, wrender, jrender);
+		}
 	}
 
 }

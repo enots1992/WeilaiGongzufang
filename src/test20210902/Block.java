@@ -17,6 +17,7 @@ import test20210902.building.Residence;
 import wblut.hemesh.HE_Face;
 import wblut.hemesh.HE_Halfedge;
 import wblut.hemesh.HE_Vertex;
+import wblut.processing.WB_Render;
 
 /**
  * 
@@ -113,10 +114,12 @@ public class Block {
 
 	}
 
+	boolean drawBuilding = true;
+
 	/**
 	 * drawing
 	 */
-	public void drawBlock(JTSRender jrender, PApplet app) {
+	public void drawBlock(JTSRender jrender, PApplet app, WB_Render wrender) {
 		app.pushStyle();
 		app.strokeWeight(1);
 		app.stroke(0);
@@ -125,6 +128,12 @@ public class Block {
 		jrender.draw(block);
 		jrender.setFill(128);
 		jrender.draw(road);
+
+		if (drawBuilding) {
+			for (BuildingGroup bg : this.buildingGroups) {
+				bg.drawGroup(app, jrender, wrender);
+			}
+		}
 
 		app.popStyle();
 
