@@ -27,6 +27,8 @@ public class Block {
 	private HE_Face f;
 	private double halfLength;
 	public int fill;
+
+	public ArrayList<BuildingGroup> buildingGroups;
 	public ArrayList<Building> buildings;
 
 	/**
@@ -50,45 +52,16 @@ public class Block {
 	public Block(HE_Face f, double halfLength) {
 		this.f = f;
 		this.halfLength = halfLength;
+		buildings = new ArrayList<Building>();
+		buildingGroups = new ArrayList<BuildingGroup>();
 		fill = 0xffff8800;
 		updateShape();
 	}
 
-	public void setBlockBuildings(String type, double minArea) {
-
-		switch (type) {
-		case "commercial":
-			this.addBuilding(new Commercial(this));
-			break;
-		case "publicRentalHouse":
-			this.addBuilding(new PublicRentalHouse(this));
-			break;
-		case "residence":
-			this.addBuilding(new Residence(this));
-			break;
-		case "kindergarten":
-			break;
-		}
-	}
-
-	/**
-	 * 向地块中添加建筑
-	 * 
-	 * @param b
-	 */
-	public void addBuilding(Building b) {
-		this.buildings.add(b);
-		updateBuildingPosition();
-	}
-
-	/**
-	 * 向地块中添加建筑
-	 * 
-	 * @param bs
-	 */
-	public void addBuildng(ArrayList<Building> bs) {
-		this.buildings.addAll(bs);
-		updateBuildingPosition();
+	public void setBlockBuildings(String type, double minArea, boolean isSingle) {
+		BuildingGroup bg = new BuildingGroup(this, type, minArea, isSingle);
+		this.buildingGroups.add(bg);
+		this.buildings.addAll(bg.getBuildings());
 	}
 
 	/**

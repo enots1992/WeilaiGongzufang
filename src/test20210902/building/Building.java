@@ -22,7 +22,7 @@ public abstract class Building {
 	public double areaFloor, areaAll;
 
 	/**
-	 * double[]{x0,x1,y0,y1}
+	 * double[]{dx,dy}
 	 */
 	public double[] distanceBetweenBuilding;
 
@@ -36,8 +36,10 @@ public abstract class Building {
 
 	}
 
-	public Building setDistanceBetweenBuilding(double x0, double x1, double y0, double y1) {
-		this.distanceBetweenBuilding = new double[] { x0, x1, y0, y1 };
+	public abstract void move(Vec v);
+
+	public Building setDistanceBetweenBuilding(double dx, double dy) {
+		this.distanceBetweenBuilding = new double[] { dx, dy };
 		return this;
 	}
 

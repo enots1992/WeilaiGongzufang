@@ -65,10 +65,8 @@ public class Test20210902 extends PApplet {
 
 		case 'G':
 
-			cam.top();
 			manager.generateBuildings();
 			manager.optimizeBuildings();
-			System.out.println("view:top");
 			break;
 		case 'E':
 			System.out.println("draw next edge");
