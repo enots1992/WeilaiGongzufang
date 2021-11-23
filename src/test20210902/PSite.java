@@ -857,10 +857,6 @@ public class PSite {
 		private IntersectionInfo(Vec v, HE_Halfedge e) {
 			this.v = v;
 			this.e = e;
-//			System.out.println("===new intersection===");
-//			v.print("intersection point");
-//			new Vec(e.getStartVertex()).print("e start");
-//			new Vec(e.getEndVertex()).print("e end");
 
 		}
 	}

@@ -54,7 +54,6 @@ public class Residence extends Building {
 		IG.init();
 		IG.open(path);
 		for (ILayer layer : IG.layers()) {
-			System.out.println("layerCrvNum:" + layer.getCurveNum());
 
 			switch (layer.name()) {
 			case "01":
