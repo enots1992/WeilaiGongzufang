@@ -49,7 +49,9 @@ public class BuildingGroup {
 		if (isSingle) {
 
 		} else {
-			Building b;
+			Building b = null;
+			double area = 0;
+
 			switch (type) {
 
 			case "commercial":
@@ -64,6 +66,12 @@ public class BuildingGroup {
 			case "kindergarten":
 				break;
 			}
+
+			do {
+				area += b.getAreaAll();
+				bs.add(b);
+			} while (area < minArea);
+
 		}
 
 	}
