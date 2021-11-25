@@ -52,21 +52,16 @@ public class BuildingGroup {
 			Building b = null;
 			double area = 0;
 
-			switch (type) {
-
-			case "commercial":
+			if (type == Building.commercial) {
 				b = new Commercial(block);
-				break;
-			case "publicRentalHouse":
+			} else if (type == Building.publicRentalHouse) {
 				b = new PublicRentalHouse(block);
-				break;
-			case "residence":
+			} else if (type == Building.residence) {
 				b = new Residence(block);
-				break;
-			case "kindergarten":
-				break;
-			}
+			} else if (type == Building.kindergarten) {
 
+			}
+			System.out.println("barea:"+b.getAreaBoundary());
 			do {
 				area += b.getAreaAll();
 				bs.add(b);

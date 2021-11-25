@@ -38,6 +38,7 @@ public class Residence extends Building {
 	public Residence(Block block) {
 		super(block);
 		this.distanceBetweenBuilding = new double[] {};
+		this.floorNum = 18;
 		openFile();
 		// TODO Auto-generated constructor stub
 
@@ -56,20 +57,37 @@ public class Residence extends Building {
 		for (ILayer layer : IG.layers()) {
 
 			switch (layer.name()) {
-			case "01":
+			case "Í¼²ã 01":
 				// »§ÐÍÐÎ×´
 				boundary_house = this.getJTSPolygonFromFromICurves(layer.getCurves());
 				break;
-			case "02":
+			case "Í¼²ã 02":
 				// ¸¨Öú¿Õ¼äÐÎ×´
 				boundary_support = this.getJTSPolygonFromFromICurves(layer.getCurves());
 				break;
-			case "03":
+			case "Í¼²ã 03":
 				// ×Ü±ß½çÐÎ×´
 				boundary = this.getJTSPolygonFromFromICurves(layer.getCurves());
 				break;
 			}
 		}
+
+//		System.out.println("boundary_house:" + boundary_house.getArea());
+//		System.out.println("boundary_support:" + boundary_support.getArea());
+//		System.out.println("boundary:" + boundary.getArea());
+		if (mirrorHouse) {
+			boundary = mirrorGeo(boundary);
+			boundary_support = mirrorGeo(boundary_support);
+			boundary_house = mirrorGeo(boundary_house);
+		}
+	}
+
+	private Geometry mirrorGeo(Geometry geo) {
+
+		int dim = geo.getDimension();
+		System.out.println("dim:" + dim);
+
+		return null;
 	}
 
 	/**
@@ -122,6 +140,7 @@ public class Residence extends Building {
 		cs[crvs.length] = cs[0];
 
 		Polygon p = gf.createPolygon(cs);
+		System.out.println("p:" + p.getArea());
 		return p;
 	}
 
