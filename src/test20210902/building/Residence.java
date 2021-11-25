@@ -83,9 +83,23 @@ public class Residence extends Building {
 	}
 
 	private Geometry mirrorGeo(Geometry geo) {
+		Geometry mir;
+		GeometryFactory gf = new GeometryFactory();
+		Coordinate[] mirShell;
 
 		int dim = geo.getDimension();
-		System.out.println("dim:" + dim);
+		if (dim == 2) {
+
+			if (geo instanceof Polygon) {
+				Polygon poly = (Polygon) geo;
+				Coordinate[] shell = poly.getExteriorRing().getCoordinates();
+				mirShell = new Coordinate[shell.length];
+
+				for (int i = 0; i < shell.length; i++) {
+
+				}
+			}
+		}
 
 		return null;
 	}
