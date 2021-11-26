@@ -82,21 +82,26 @@ public class Residence extends Building {
 		}
 	}
 
+	private double[] getGeoAABB(Geometry geo) {
+		return null;
+	}
+
 	private Geometry mirrorGeo(Geometry geo) {
 		Geometry mir;
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] mirShell;
-
+		Vec center = null;
 		int dim = geo.getDimension();
 		if (dim == 2) {
-
 			if (geo instanceof Polygon) {
 				Polygon poly = (Polygon) geo;
 				Coordinate[] shell = poly.getExteriorRing().getCoordinates();
 				mirShell = new Coordinate[shell.length];
 
 				for (int i = 0; i < shell.length; i++) {
-
+					Vec v = new Vec(shell[i]);
+					Vec vv = v.mirrorInstance(center, new Vec(1, 0, 0));
+					mirShell[i] = null;
 				}
 			}
 		}
