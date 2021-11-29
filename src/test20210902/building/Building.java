@@ -16,10 +16,11 @@ public abstract class Building {
 	public static String kindergarten = "kindergarten";
 
 	public Block block;
-	public Geometry boundary, buffer;
+	public Geometry boundary, buffer_toMulti, buffer_toHigh;
 	public int floorNum;
 	public Vec pos;
 	public double areaFloor, areaAll;
+	public double floorHeight, height;
 
 	/**
 	 * double[]{dx,dy}
@@ -35,8 +36,6 @@ public abstract class Building {
 		this.boundary = boundary;
 
 	}
-
-	public abstract void move(Vec v);
 
 	public Building setDistanceBetweenBuilding(double dx, double dy) {
 		this.distanceBetweenBuilding = new double[] { dx, dy };
@@ -64,6 +63,16 @@ public abstract class Building {
 	public double getAreaAll() {
 		return this.getAreaBoundary() * floorNum;
 	}
+
+	public abstract boolean isLowStoreyBuilding();
+
+	public abstract boolean isMultiStoreyBuilding();
+
+	public abstract boolean isHighStoreyBuilding();
+
+	public abstract void move(Vec v);
+
+	public abstract void rotate(double angle);
 
 	/**
 	 * drawing

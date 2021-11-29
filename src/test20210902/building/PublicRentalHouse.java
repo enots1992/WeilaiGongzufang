@@ -36,4 +36,27 @@ public class PublicRentalHouse extends Building {
 
 	}
 
+	@Override
+	public boolean isMultiStoreyBuilding() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isHighStoreyBuilding() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void rotate(double angle) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean isLowStoreyBuilding() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

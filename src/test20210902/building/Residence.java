@@ -18,14 +18,14 @@ import test20210902.Block;
 import wblut.processing.WB_Render;
 
 /**
- * 住宅楼，户型固定
+ * 住宅楼(租赁房)，户型固定
  * 
  * @author enots1992
  *
  */
 public class Residence extends Building {
 	String path = "E:\\workspace\\30#WeiLai\\data\\houseType01.3dm";
-	boolean mirrorHouse = true;
+	public boolean mirrorHouse = true;
 	/**
 	 * 户型形状
 	 */
@@ -35,11 +35,18 @@ public class Residence extends Building {
 	 */
 	Geometry boundary_support;
 
+	private Vec buildingDirection;
+
 	public Residence(Block block) {
 		super(block);
 		this.distanceBetweenBuilding = new double[] {};
+		buildingDirection = new Vec(0, 1, 0);
 		this.floorNum = 18;
+		this.floorHeight = 3.3;
+		this.height = floorNum * floorHeight;
 		openFile();
+		updateDistanceBetweenBuilding();
+
 		// TODO Auto-generated constructor stub
 
 	}
@@ -72,9 +79,6 @@ public class Residence extends Building {
 			}
 		}
 
-//		System.out.println("boundary_house:" + boundary_house.getArea());
-//		System.out.println("boundary_support:" + boundary_support.getArea());
-//		System.out.println("boundary:" + boundary.getArea());
 		if (mirrorHouse) {
 			boundary = mirrorGeo(boundary);
 			boundary_support = mirrorGeo(boundary_support);
@@ -82,15 +86,44 @@ public class Residence extends Building {
 		}
 	}
 
-	private double[] getGeoAABB(Geometry geo) {
-		return null;
+	private void updateDistanceBetweenBuilding() {
+		double gapx, gapy;
+		gapx = this.setDistanceBetweenBuilding(new double[] {});
 	}
 
+	/**
+	 * get aabb double[]{minx,miny,maxx,maxy} of a geometry
+	 * 
+	 * @param geo
+	 * @return
+	 */
+	private double[] getGeoAABB(Geometry geo) {
+		double minx = Double.MAX_VALUE;
+		double miny = Double.MAX_VALUE;
+		double maxx = Double.MIN_VALUE;
+		double maxy = Double.MIN_VALUE;
+		for (Coordinate c : geo.getCoordinates()) {
+			minx = (c.x < minx) ? c.x : minx;
+			miny = (c.y < miny) ? c.y : miny;
+			maxx = (c.x > maxx) ? c.x : maxx;
+			maxy = (c.y > maxy) ? c.y : maxy;
+
+		}
+		return new double[] { minx, miny, maxx, maxy };
+	}
+
+	/**
+	 * get the mirror of a geometry
+	 * 
+	 * @param geo
+	 * @return
+	 */
 	private Geometry mirrorGeo(Geometry geo) {
 		Geometry mir;
 		GeometryFactory gf = new GeometryFactory();
-		Coordinate[] mirShell;
-		Vec center = null;
+		Coordinate[] mirShell = null;
+		Vec center = new Vec(getGeoAABB(geo)[2], 0, 0);
+
 		int dim = geo.getDimension();
 		if (dim == 2) {
 			if (geo instanceof Polygon) {
@@ -101,12 +134,15 @@ public class Residence extends Building {
 				for (int i = 0; i < shell.length; i++) {
 					Vec v = new Vec(shell[i]);
 					Vec vv = v.mirrorInstance(center, new Vec(1, 0, 0));
-					mirShell[i] = null;
+					mirShell[i] = vv.getCoordinate();
 				}
 			}
 		}
 
-		return null;
+		mir = gf.createPolygon(mirShell);
+		mir = mir.union(geo);
+
+		return mir;
 	}
 
 	/**
@@ -143,12 +179,6 @@ public class Residence extends Building {
 
 	}
 
-	@Override
-	public void move(Vec v) {
-		// TODO Auto-generated method stub
-
-	}
-
 	private Geometry getJTSPolygonFromFromICurves(ICurve[] crvs) {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] cs = new Coordinate[crvs.length + 1];
@@ -161,6 +191,50 @@ public class Residence extends Building {
 		Polygon p = gf.createPolygon(cs);
 		System.out.println("p:" + p.getArea());
 		return p;
+	}
+
+	@Override
+	/**
+	 * 住宅建筑，10-27米,多层
+	 */
+	public boolean isMultiStoreyBuilding() {
+		boolean b;
+		if (height < 27 && height >= 10) {
+			b = true;
+		} else {
+			b = false;
+		}
+		// TODO Auto-generated method stub
+		return b;
+	}
+
+	@Override
+	/**
+	 * 住宅建筑，27米高层
+	 */
+	public boolean isHighStoreyBuilding() {
+		boolean b = (height < 27) ? false : true;
+		// TODO Auto-generated method stub
+		return b;
+	}
+
+	@Override
+	public boolean isLowStoreyBuilding() {
+
+		boolean b = (height < 10) ? true : false;
+		// TODO Auto-generated method stub
+		return b;
+	}
+
+	@Override
+	public void rotate(double angle) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void move(Vec v) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
