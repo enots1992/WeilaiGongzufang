@@ -16,7 +16,7 @@ public abstract class Building {
 	public static String kindergarten = "kindergarten";
 
 	public Block block;
-	public Geometry boundary, buffer_toMulti, buffer_toHigh;
+	public Geometry boundary, buffer_toLow, buffer_toMulti, buffer_toHigh;
 	public int floorNum;
 	public Vec pos;
 	public double areaFloor, areaAll;
@@ -25,26 +25,23 @@ public abstract class Building {
 	/**
 	 * double[]{dx,dy}
 	 */
-	public double[] distanceBetweenBuilding;
+	public double[] distance_toLow, distance_toMulti, distance_toHigh;
+
+	/**
+	 * main direction of the building
+	 */
+	public Vec dir;
 
 	public Building(Block block) {
 		this.block = block;
+		dir = new Vec(0, 1, 0);
 	}
 
 	public Building(Block block, Geometry boundary) {
 		this.block = block;
 		this.boundary = boundary;
+		dir = new Vec(0, 1, 0);
 
-	}
-
-	public Building setDistanceBetweenBuilding(double dx, double dy) {
-		this.distanceBetweenBuilding = new double[] { dx, dy };
-		return this;
-	}
-
-	public Building setDistanceBetweenBuilding(double[] distance) {
-		this.distanceBetweenBuilding = distance;
-		return this;
 	}
 
 	public Building setBoundary(Geometry boundary) {

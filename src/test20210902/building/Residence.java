@@ -35,17 +35,14 @@ public class Residence extends Building {
 	 */
 	Geometry boundary_support;
 
-	private Vec buildingDirection;
-
 	public Residence(Block block) {
 		super(block);
-		this.distanceBetweenBuilding = new double[] {};
-		buildingDirection = new Vec(0, 1, 0);
+
 		this.floorNum = 18;
 		this.floorHeight = 3.3;
 		this.height = floorNum * floorHeight;
 		openFile();
-		updateDistanceBetweenBuilding();
+		updateBuildingBuffer();
 
 		// TODO Auto-generated constructor stub
 
@@ -85,10 +82,57 @@ public class Residence extends Building {
 			boundary_house = mirrorGeo(boundary_house);
 		}
 	}
+	
+	private void updateBuildingBuffer() {
+		updateDistanceBetweenBuilding();
+		Coordinate[]cs=this.boundary.getCoordinates();
+	}
 
+	/**
+	 * 根据合肥城市技术管理规定第四章有关要求，在南北向平行布局的基础上设置建筑间距
+	 */
 	private void updateDistanceBetweenBuilding() {
-		double gapx, gapy;
-		gapx = this.setDistanceBetweenBuilding(new double[] {});
+		double gapx_toLow = 0, gapx_toMul = 0, gapx_toHigh = 0, gapy_toLow = 0, gapy_toMul = 0, gapy_toHigh = 0;
+		// gapx
+		if (isLowStoreyBuilding()) {
+			gapx_toLow = 6;
+			gapx_toMul = 6;
+			gapx_toHigh = 9;
+		} else if (isMultiStoreyBuilding()) {
+			gapx_toLow = 6;
+			gapx_toMul = 6;
+			gapx_toHigh = 9;
+		} else if (isHighStoreyBuilding()) {
+			gapx_toLow = 9;
+			gapx_toMul = 9;
+			gapx_toHigh = 13;
+		}
+		// gapy
+		if (isLowStoreyBuilding()) {
+			gapy_toLow = ((1.35 * this.height) > 8) ? 1.35 * this.height : 8;
+			gapy_toMul = 1.23 * this.height;
+			gapy_toHigh = 13;
+		} else if (isMultiStoreyBuilding()) {
+			if (this.height > 10 && this.height < 18) {
+				gapy_toLow = 1.23 * this.height;
+				gapy_toMul = 1.23 * this.height;
+				gapy_toHigh = ((1.23 * this.height) > 13) ? 1.23 * this.height : 13;
+			} else if (this.height >= 18 && this.height < 27) {
+				gapy_toLow = 1.26 * this.height;
+				gapy_toMul = 1.26 * this.height;
+				gapy_toHigh = ((1.26 * this.height) > 13) ? 1.26 * this.height : 16;
+			}
+
+		} else if (isHighStoreyBuilding()) {
+			gapy_toLow = 30;
+			gapy_toMul = 30;
+			gapy_toHigh = 30;
+		}
+
+		this.distance_toLow = new double[] { gapx_toLow, gapy_toLow };
+		this.distance_toMulti = new double[] { gapx_toMul, gapy_toMul };
+		this.distance_toHigh = new double[] { gapx_toHigh, gapy_toHigh };
+
 	}
 
 	/**
