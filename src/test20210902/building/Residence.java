@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 
 import Vec.Vec;
+import Vec.dist.Intersection3d;
 import igeo.ICurve;
 import igeo.IG;
 import igeo.ILayer;
@@ -25,7 +26,7 @@ import wblut.processing.WB_Render;
  */
 public class Residence extends Building {
 	String path = "E:\\workspace\\30#WeiLai\\data\\houseType01.3dm";
-	public boolean mirrorHouse = true;
+	public boolean mirrorHouse = false;
 	/**
 	 * 户型形状
 	 */
@@ -82,10 +83,106 @@ public class Residence extends Building {
 			boundary_house = mirrorGeo(boundary_house);
 		}
 	}
-	
+
+	/**
+	 * update distance gap&shape
+	 */
 	private void updateBuildingBuffer() {
 		updateDistanceBetweenBuilding();
-		Coordinate[]cs=this.boundary.getCoordinates();
+		updateBufferShape();
+	}
+
+	/**
+	 * update shape
+	 */
+	private void updateBufferShape() {
+		this.buffer_toHigh = bufferXY(this.boundary, this.distance_toHigh);
+		this.buffer_toMulti = bufferXY(this.boundary, this.distance_toMulti);
+		this.buffer_toLow = bufferXY(this.boundary, this.distance_toLow);
+
+	}
+
+	/**
+	 * buffer ,xy distance are different
+	 * 
+	 * @param g        geometry
+	 * @param distance double[]{gapx,gapy}
+	 * @return
+	 */
+	private Geometry bufferXY(Geometry g, double[] distance) {
+		GeometryFactory gf = new GeometryFactory();
+		Coordinate[] cs = this.boundary.getCoordinates();
+		Vec[][] bufferlines = new Vec[cs.length - 1][];
+		Coordinate[] cs_ = new Coordinate[cs.length];
+
+		Vec center = new Vec(g.getCentroid().getCoordinate());
+		center.z = 0;
+		System.out.println("cslenght:" + cs.length);
+		for (int i = 0; i < cs.length - 1; i++) {
+			Vec v0 = new Vec(cs[i]);
+			Vec v1 = new Vec(cs[i + 1]);
+
+			v0.z = 0;
+			v1.z = 0;
+
+			// 线段方向
+			Vec dir = v1.subInstance(v0);
+
+			// offset 方向
+			Vec bufferDir = dir.duplicate().rotate(Math.PI / 2);
+
+			// offset方向与x方向夹角
+			double angle = bufferDir.getAngleBetween(new Vec(1, 0, 0));
+
+			if (equal(angle, Math.PI / 2, 0.00001)) {
+				// y方向
+//				System.out.println("y方向:"+angle/Math.PI*180);
+				bufferDir.setLengthLocal(distance[1]);
+			} else {
+				// x方向
+
+//				System.out.println("x方向:"+angle/Math.PI*180);
+
+				bufferDir.setLengthLocal(distance[0]);
+			}
+
+			bufferlines[i] = new Vec[] { v0.addInstance(bufferDir), v1.addInstance(bufferDir) };
+		}
+
+		for (int i = 0; i < bufferlines.length; i++) {
+			Vec[] line0 = bufferlines[i];
+			Vec[] line1 = bufferlines[(i + 1) % bufferlines.length];
+
+			Vec intersection = Intersection3d.get2LineIntersection2d(line0[0], line0[1], line1[0], line1[1]);
+
+			if (intersection == null) {
+				intersection = line0[1];
+			}
+//			if (intersection.y > 100) {
+//				System.out.println("i:" + i);
+//
+//				line0[0].print("line0[0]");
+//				line0[1].print("line0[1]");
+//				line1[0].print("line1[0]");
+//				line1[1].print("line1[1]");
+//				intersection.print("intersection");
+//			}
+			cs_[i] = intersection.getCoordinate();
+		}
+		cs_[cs_.length - 1] = cs_[0];
+		Geometry p = gf.createPolygon(cs_);
+		p = p.buffer(0.001);
+		p = p.buffer(-0.001);
+
+		return p;
+	}
+
+	private boolean equal(double num1, double num2, double tolerance) {
+		if (Math.abs(num1 - num2) < tolerance) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -124,6 +221,7 @@ public class Residence extends Building {
 			}
 
 		} else if (isHighStoreyBuilding()) {
+			// 同时需要根据遮挡长度设定距离
 			gapy_toLow = 30;
 			gapy_toMul = 30;
 			gapy_toHigh = 30;
@@ -221,6 +319,43 @@ public class Residence extends Building {
 	public void drawBuilding(PApplet app, WB_Render wrender, JTSRender jrender) {
 		// TODO Auto-generated method stub
 
+		app.pushStyle();
+		Coordinate c = this.boundary.getCentroid().getCoordinate();
+		app.strokeWeight(5);
+		app.point((float) c.x, (float) c.y);
+		app.popStyle();
+		// draw buffer
+
+		jrender.setFill(false);
+		jrender.setStroke(0xffffff00);
+		jrender.draw(buffer_toHigh);
+		jrender.setStroke(0xffff9999);
+		jrender.draw(buffer_toMulti);
+		jrender.setStroke(0xffff00ff);
+		jrender.draw(buffer_toLow);
+
+		// drawbuilding
+
+//		jrender.setFill(true);
+//		jrender.setFill(0xff000000);
+		jrender.draw(this.boundary);
+		for (int i = 0; i < this.floorNum; i++) {
+			app.pushStyle();
+			app.fill(128, 0, 0, 128);
+			this.drawExtrude(this.boundary_house, this.floorHeight, i * floorHeight - floorHeight, app, wrender,
+					jrender);
+			app.fill(128, 0);
+			this.drawExtrude(this.boundary_support, this.floorHeight, i * floorHeight - floorHeight, app, wrender,
+					jrender);
+			app.pushMatrix();
+			app.translate(0, 0, (float) (i * floorHeight - floorHeight));
+			jrender.setFill(true);
+			jrender.draw(this.boundary);
+			app.popMatrix();
+
+			app.popStyle();
+		}
+
 	}
 
 	private Geometry getJTSPolygonFromFromICurves(ICurve[] crvs) {
@@ -233,6 +368,7 @@ public class Residence extends Building {
 		cs[crvs.length] = cs[0];
 
 		Polygon p = gf.createPolygon(cs);
+
 		System.out.println("p:" + p.getArea());
 		return p;
 	}

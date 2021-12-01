@@ -22,7 +22,8 @@ public class BuildingDrawingTest extends PApplet {
 	}
 
 	public void draw() {
-		background(0);
+		background(255);
+//		cam.top();
 		cam.drawSystem(100);
 		b.drawBuilding(this, wrender, jrender);
 

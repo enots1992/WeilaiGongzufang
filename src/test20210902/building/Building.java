@@ -1,5 +1,6 @@
 package test20210902.building;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 import Vec.Vec;
@@ -79,4 +80,25 @@ public abstract class Building {
 	 * @param jrender
 	 */
 	public abstract void drawBuilding(PApplet app, WB_Render wrender, JTSRender jrender);
+
+	public void drawExtrude(Geometry profile, double h, double z, PApplet app, WB_Render wrender, JTSRender jrender) {
+		app.pushStyle();
+		Coordinate[] cs = profile.getCoordinates();
+		for (int i = 0; i < cs.length - 1; i++) {
+			app.beginShape();
+			Vec v0 = new Vec(cs[i]);
+			Vec v1 = new Vec(cs[i+1]);
+
+			app.vertex(v0.xf(), v0.yf(), (float) z);
+			app.vertex(v1.xf(), v1.yf(), (float) z);
+			app.vertex(v1.xf(), v1.yf(), (float) (z + h));
+			app.vertex(v0.xf(), v0.yf(), (float) (z + h));
+
+			app.endShape();
+
+		}
+
+		app.popStyle();
+
+	}
 }
