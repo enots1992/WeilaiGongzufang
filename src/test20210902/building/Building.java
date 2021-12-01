@@ -87,7 +87,7 @@ public abstract class Building {
 		for (int i = 0; i < cs.length - 1; i++) {
 			app.beginShape();
 			Vec v0 = new Vec(cs[i]);
-			Vec v1 = new Vec(cs[i+1]);
+			Vec v1 = new Vec(cs[i + 1]);
 
 			app.vertex(v0.xf(), v0.yf(), (float) z);
 			app.vertex(v1.xf(), v1.yf(), (float) z);

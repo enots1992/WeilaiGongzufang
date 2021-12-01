@@ -347,10 +347,20 @@ public class Residence extends Building {
 			app.fill(128, 0);
 			this.drawExtrude(this.boundary_support, this.floorHeight, i * floorHeight - floorHeight, app, wrender,
 					jrender);
+
+			// bottom
 			app.pushMatrix();
 			app.translate(0, 0, (float) (i * floorHeight - floorHeight));
 			jrender.setFill(true);
 			jrender.draw(this.boundary);
+			app.popMatrix();
+
+			// cap
+			app.pushMatrix();
+			app.translate(0, 0, (float) (i * floorHeight));
+			jrender.setFill(true);
+			jrender.draw(this.boundary_support);
+			jrender.draw(this.boundary_house);
 			app.popMatrix();
 
 			app.popStyle();
