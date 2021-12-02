@@ -13,7 +13,7 @@ public class BuildingDrawingTest extends PApplet {
 
 	public void setup() {
 		size(800, 600, P3D);
-		cam = new CameraController(this);
+		cam = new CameraController(this, 100);
 		wrender = new WB_Render(this);
 		jrender = new JTSRender(this);
 
@@ -22,11 +22,26 @@ public class BuildingDrawingTest extends PApplet {
 	}
 
 	public void draw() {
-		background(255);
+		background(0);
 //		cam.top();
 		cam.drawSystem(100);
 		b.drawBuilding(this, wrender, jrender);
 
+	}
+
+	public void keyPressed() {
+		switch (keyCode) {
+		case UP:
+			b.changeFloorNum(1);
+			break;
+		case DOWN:
+
+			b.changeFloorNum(-1);
+			break;
+		case 'T':
+			cam.top();
+			break;
+		}
 	}
 
 }

@@ -43,7 +43,7 @@ public class Residence extends Building {
 		this.floorHeight = 3.3;
 		this.height = floorNum * floorHeight;
 		openFile();
-		updateBuildingBuffer();
+		updateBuildingBuffer2();
 
 		// TODO Auto-generated constructor stub
 
@@ -117,7 +117,7 @@ public class Residence extends Building {
 
 		Vec center = new Vec(g.getCentroid().getCoordinate());
 		center.z = 0;
-		System.out.println("cslenght:" + cs.length);
+//		System.out.println("cslenght:" + cs.length);
 		for (int i = 0; i < cs.length - 1; i++) {
 			Vec v0 = new Vec(cs[i]);
 			Vec v1 = new Vec(cs[i + 1]);
@@ -171,6 +171,80 @@ public class Residence extends Building {
 		}
 		cs_[cs_.length - 1] = cs_[0];
 		Geometry p = gf.createPolygon(cs_);
+		p = p.buffer(0.001);
+		p = p.buffer(-0.001);
+
+		return p;
+	}
+
+	private void updateBuildingBuffer2() {
+		updateDistanceBetweenBuilding();
+		updateBufferShape2();
+	}
+
+	private void updateBufferShape2() {
+		this.buffer_toHigh = bufferXY2(this.boundary, this.distance_toHigh);
+		this.buffer_toMulti = bufferXY2(this.boundary, this.distance_toMulti);
+		this.buffer_toLow = bufferXY2(this.boundary, this.distance_toLow);
+
+	}
+
+	/**
+	 * 只有直线方向buffer
+	 * 
+	 * @param g
+	 * @param distance
+	 * @return
+	 */
+	private Geometry bufferXY2(Geometry g, double[] distance) {
+		GeometryFactory gf = new GeometryFactory();
+		Coordinate[] cs = this.boundary.getCoordinates();
+		Vec[][] bufferlines = new Vec[cs.length - 1][];
+		Coordinate[] cs_ = new Coordinate[cs.length];
+
+		Geometry p = g.buffer(0.1);
+		p = g.buffer(-0.1);
+
+		Vec center = new Vec(g.getCentroid().getCoordinate());
+		center.z = 0;
+//		System.out.println("cslenght:" + cs.length);
+		for (int i = 0; i < cs.length - 1; i++) {
+			Vec v0 = new Vec(cs[i]);
+			Vec v1 = new Vec(cs[i + 1]);
+
+			v0.z = 0;
+			v1.z = 0;
+
+			// 线段方向
+			Vec dir = v1.subInstance(v0);
+
+			// offset 方向
+			Vec bufferDir = dir.duplicate().rotate(Math.PI / 2);
+
+			// offset方向与x方向夹角
+			double angle = bufferDir.getAngleBetween(new Vec(1, 0, 0));
+
+			if (equal(angle, Math.PI / 2, 0.00001)) {
+				// y方向
+//				System.out.println("y方向:"+angle/Math.PI*180);
+				bufferDir.setLengthLocal(distance[1]);
+			} else {
+				// x方向
+
+//				System.out.println("x方向:"+angle/Math.PI*180);
+
+				bufferDir.setLengthLocal(distance[0]);
+			}
+
+			bufferlines[i] = new Vec[] { v0.addInstance(bufferDir), v1.addInstance(bufferDir) };
+
+			Coordinate[] rect = new Coordinate[] { v0.getCoordinate(), v1.getCoordinate(),
+					bufferlines[i][1].getCoordinate(), bufferlines[i][0].getCoordinate(), v0.getCoordinate() };
+
+			Polygon pp = gf.createPolygon(rect);
+			p = p.union(pp);
+		}
+
 		p = p.buffer(0.001);
 		p = p.buffer(-0.001);
 
@@ -287,6 +361,24 @@ public class Residence extends Building {
 		return mir;
 	}
 
+	@Override
+	public void changeFloorNum(int num) {
+		// TODO Auto-generated method stub
+		boolean changed = true;
+		this.floorNum += num;
+		this.height = floorNum * this.floorHeight;
+		if (height > 100 || height < 3) {
+			this.floorNum -= num;
+			this.height = floorNum * this.floorHeight;
+			changed = false;
+		}
+
+		if (changed) {
+			this.updateBuildingBuffer2();
+		}
+
+	}
+
 	/**
 	 * open from file
 	 */
@@ -342,22 +434,20 @@ public class Residence extends Building {
 		for (int i = 0; i < this.floorNum; i++) {
 			app.pushStyle();
 			app.fill(128, 0, 0, 128);
-			this.drawExtrude(this.boundary_house, this.floorHeight, i * floorHeight - floorHeight, app, wrender,
-					jrender);
+			this.drawExtrude(this.boundary_house, this.floorHeight, i * floorHeight, app, wrender, jrender);
 			app.fill(128, 0);
-			this.drawExtrude(this.boundary_support, this.floorHeight, i * floorHeight - floorHeight, app, wrender,
-					jrender);
+			this.drawExtrude(this.boundary_support, this.floorHeight, i * floorHeight, app, wrender, jrender);
 
 			// bottom
 			app.pushMatrix();
-			app.translate(0, 0, (float) (i * floorHeight - floorHeight));
+			app.translate(0, 0, (float) (i * floorHeight));
 			jrender.setFill(true);
 			jrender.draw(this.boundary);
 			app.popMatrix();
 
 			// cap
 			app.pushMatrix();
-			app.translate(0, 0, (float) (i * floorHeight));
+			app.translate(0, 0, (float) ((i + 1) * floorHeight));
 			jrender.setFill(true);
 			jrender.draw(this.boundary_support);
 			jrender.draw(this.boundary_house);

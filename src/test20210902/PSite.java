@@ -35,7 +35,7 @@ import wblut.processing.WB_Render;
  */
 public class PSite {
 
-	public HE_Mesh site_boundray, site_all, site;
+	public HE_Mesh site_boundray, site_all, site, site_green;
 	public Vec[] boundary;
 
 	public double[] roadRangeX, roadRangeY;
@@ -600,6 +600,7 @@ public class PSite {
 		WB_Polygon poly2 = new WB_Polygon(cs2);
 		HEC_Polygon creator2 = new HEC_Polygon(poly2, 0);
 		site_all = new HE_Mesh(creator2);
+	    
 	}
 
 	/**

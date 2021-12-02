@@ -72,6 +72,8 @@ public abstract class Building {
 
 	public abstract void rotate(double angle);
 
+	public abstract void changeFloorNum(int num);
+
 	/**
 	 * drawing
 	 * 

@@ -54,4 +54,10 @@ public class Commercial extends Building {
 		return false;
 	}
 
+	@Override
+	public void changeFloorNum(int num) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -44,6 +44,13 @@ public class BuildingGroup {
 		updateBoundary();
 	}
 
+	/**
+	 * update buildings in this area
+	 * 
+	 * @param type
+	 * @param minArea
+	 * @param isSingle
+	 */
 	public void updateBuilding(String type, double minArea, boolean isSingle) {
 
 		if (isSingle) {
@@ -61,7 +68,7 @@ public class BuildingGroup {
 			} else if (type == Building.kindergarten) {
 
 			}
-			System.out.println("barea:"+b.getAreaBoundary());
+			System.out.println("barea:" + b.getAreaBoundary());
 			do {
 				area += b.getAreaAll();
 				bs.add(b);

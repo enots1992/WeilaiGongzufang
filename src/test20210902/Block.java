@@ -59,6 +59,12 @@ public class Block {
 		updateShape();
 	}
 
+	/**
+	 * 
+	 * @param type     Building.type
+	 * @param minArea  minArea of this function
+	 * @param isSingle is a single building
+	 */
 	public void setBlockBuildings(String type, double minArea, boolean isSingle) {
 		BuildingGroup bg = new BuildingGroup(this, type, minArea, isSingle);
 		this.buildingGroups.add(bg);
