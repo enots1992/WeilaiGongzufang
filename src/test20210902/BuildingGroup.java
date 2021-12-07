@@ -46,7 +46,7 @@ public class BuildingGroup {
 		bs = new ArrayList<Building>();
 		ran = new Random();
 		ran.setSeed(0);
-		updateBuilding(type, minArea, isSingle);
+		updateBuildings(type, minArea, isSingle);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class BuildingGroup {
 	 * @param minArea
 	 * @param isSingle
 	 */
-	public void updateBuilding(String type, double minArea, boolean isSingle) {
+	public void updateBuildings(String type, double minArea, boolean isSingle) {
 
 		double area = 0;
 
@@ -85,13 +85,13 @@ public class BuildingGroup {
 			addBuilding(b);
 		} while (area < minArea);
 
-//		updateBuildingPostion();
+		updateBuildingPostion();
 
 		System.out.println("building num:" + this.getBuildings().size());
 
 	}
 
-	private int iter = 10;
+	private int iter = 1;
 
 	/**
 	 * update its position,away from boundary and other buildings
@@ -99,9 +99,9 @@ public class BuildingGroup {
 	public void updateBuildingPostion() {
 
 		for (int i = 0; i < iter; i++) {
-			for (Building b1 : bs) {
 
-				Vec center = new Vec(b1.boundary.getCentroid().getCoordinate());
+			for (int j = 0; j < bs.size(); j++) {
+				Building b1 = bs.get(j);
 				// 与边界的关系
 
 //				if (!(g2.contains(g1))) {
@@ -116,24 +116,21 @@ public class BuildingGroup {
 //					Vec dir = v4.subInstance(v2);
 //					dir.setLengthLocal(0.5);
 //					b1.addv(dir);
-//
 //				}
+				for (int k = j + 1; k < bs.size(); k++) {
+					Building b2 = bs.get(k);
+					if (b1.touches(b2)) {
+						// 两个建筑接触则远离
+						Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
+						Vec v2 = new Vec(b2.boundary.getCentroid().getCoordinate());
 
-				// 与其他建筑的关系
-				for (Building b2 : bs) {
-					if (b1 != b2) {
+						Vec dir = v2.subInstance(v1);
+						dir.setLengthLocal(0.1);
+						v1.print("v1");
+						v1.print("v2");
+//						dir.print("dir");
 
-						if (b1.overlaps(b2)) {
-							// 两个建筑接触则远离
-							Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
-							Vec v2 = new Vec(b2.boundary.getCentroid().getCoordinate());
-
-							Vec dir = v2.subInstance(v1);
-							dir.setLengthLocal(0.1);
-
-							b1.addv(dir);
-
-						}
+//						b1.addv(dir);
 
 					}
 				}

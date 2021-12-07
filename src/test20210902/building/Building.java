@@ -77,13 +77,13 @@ public abstract class Building {
 	 * @param b
 	 * @return
 	 */
-	public boolean overlaps(Building b) {
+	public boolean touches(Building b) {
 		if (isLowStoreyBuilding()) {
-			return this.boundary.overlaps(b.buffer_toLow);
+			return this.boundary.touches(b.buffer_toLow);
 		} else if (isMultiStoreyBuilding()) {
-			return this.boundary.overlaps(b.buffer_toMulti);
+			return this.boundary.touches(b.buffer_toMulti);
 		} else if (isHighStoreyBuilding()) {
-			return this.boundary.overlaps(b.buffer_toHigh);
+			return this.boundary.touches(b.buffer_toHigh);
 		}
 
 		return false;
