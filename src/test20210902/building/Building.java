@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import Vec.Vec;
 import jtsUtil.JTSRender;
+import jtsUtil.MoveFilter;
 import processing.core.PApplet;
 import test20210902.Block;
 import wblut.processing.WB_Render;
@@ -19,9 +20,10 @@ public abstract class Building {
 	public Block block;
 	public Geometry boundary, buffer_toLow, buffer_toMulti, buffer_toHigh;
 	public int floorNum;
-	public Vec pos;
 	public double areaFloor, areaAll;
 	public double floorHeight, height;
+
+	public Vec v;
 
 	/**
 	 * double[]{dx,dy}
@@ -36,6 +38,7 @@ public abstract class Building {
 	public Building(Block block) {
 		this.block = block;
 		dir = new Vec(0, 1, 0);
+		v = new Vec(0, 0, 0);
 	}
 
 	public Building(Block block, Geometry boundary) {
@@ -60,6 +63,30 @@ public abstract class Building {
 
 	public double getAreaAll() {
 		return this.getAreaBoundary() * floorNum;
+	}
+
+	public void addv(Vec v) {
+		this.v.addLocal(v);
+	}
+
+	public abstract void updatePosition();
+
+	/**
+	 * this building touches building b
+	 * 
+	 * @param b
+	 * @return
+	 */
+	public boolean overlaps(Building b) {
+		if (isLowStoreyBuilding()) {
+			return this.boundary.overlaps(b.buffer_toLow);
+		} else if (isMultiStoreyBuilding()) {
+			return this.boundary.overlaps(b.buffer_toMulti);
+		} else if (isHighStoreyBuilding()) {
+			return this.boundary.overlaps(b.buffer_toHigh);
+		}
+
+		return false;
 	}
 
 	public abstract boolean isLowStoreyBuilding();

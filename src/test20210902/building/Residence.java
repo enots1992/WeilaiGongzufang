@@ -14,6 +14,7 @@ import igeo.IG;
 import igeo.ILayer;
 import igeo.IVec;
 import jtsUtil.JTSRender;
+import jtsUtil.MoveFilter;
 import processing.core.PApplet;
 import test20210902.Block;
 import wblut.processing.WB_Render;
@@ -49,8 +50,22 @@ public class Residence extends Building {
 
 	}
 
-	private void setPosition() {
+	public void updatePosition() {
+		move(v);
+		this.v = new Vec(0, 0, 0);
+	}
 
+	
+	
+	public void move(Vec v) {
+		MoveFilter m = new MoveFilter(v);
+
+		boundary.apply(m);
+		buffer_toLow.apply(m);
+		buffer_toMulti.apply(m);
+		buffer_toHigh.apply(m);
+		boundary_house.apply(m);
+		boundary_support.apply(m);
 	}
 
 	/**
@@ -509,12 +524,6 @@ public class Residence extends Building {
 	@Override
 	public void rotate(double angle) {
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void move(Vec v) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -13,6 +13,7 @@ public class Test20210902 extends PApplet {
 	CameraController cam;
 	WB_Render render;
 	JTSRender jrender;
+	boolean view = true;
 
 	public void setup() {
 		size(1200, 900, P3D);
@@ -48,6 +49,16 @@ public class Test20210902 extends PApplet {
 			break;
 		case RIGHT:
 			manager.changeRoad(new Vec(5, 0, 0));
+			break;
+
+		case TAB:
+			view = !view;
+			if (view) {
+				cam.top();
+			} else {
+				cam.perspective();
+			}
+
 			break;
 
 		case 'C':

@@ -43,7 +43,7 @@ public class Block {
 	/**
 	 * building area
 	 */
-	Geometry block;
+	Geometry blockBoundary;
 
 	/**
 	 * 
@@ -99,7 +99,7 @@ public class Block {
 		}
 		cs[f.getFaceVertices().size()] = cs[0];
 		site = gf.createPolygon(cs);
-		block = gf.createPolygon(cs);
+		blockBoundary = gf.createPolygon(cs);
 //		System.out.println("face edge size" + f.getFaceEdges().size());
 		for (HE_Halfedge e : f.getFaceHalfedges()) {
 
@@ -111,12 +111,12 @@ public class Block {
 				Vec v1 = new Vec(e.getEndVertex());
 				Coordinate[] ls = new Coordinate[] { v0.getCoordinate(), v1.getCoordinate() };
 				LineString line = gf.createLineString(ls);
-				block = block.difference(line.buffer(halfLength));
+				blockBoundary = blockBoundary.difference(line.buffer(halfLength));
 			}
 
 		}
 
-		road = site.difference(block);
+		road = site.difference(blockBoundary);
 
 	}
 
@@ -131,7 +131,7 @@ public class Block {
 		app.stroke(0);
 
 		jrender.setFill(fill);
-		jrender.draw(block);
+		jrender.draw(blockBoundary);
 		jrender.setFill(128);
 		jrender.draw(road);
 
@@ -161,7 +161,7 @@ public class Block {
 		System.out.println("===block info===");
 
 		System.out.println("总面积：" + f.getFaceArea() + "m2");
-		System.out.println("地块面积：" + this.block.getArea() + "m2");
+		System.out.println("地块面积：" + this.blockBoundary.getArea() + "m2");
 		System.out.println("道路面积：" + this.road.getArea() + "m2");
 //		System.out.println("地块功能：");
 //		System.out.println("建筑面积：");

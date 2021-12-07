@@ -72,7 +72,7 @@ public class PSite {
 //		blocks.get(0).setBlockBuildings(Building.commercial, 23736.45, false);
 //		blocks.get(0).setBlockBuildings(Building.publicRentalHouse, 30000, false);
 
-		blocks.get(1).setBlockBuildings(Building.residence, 95826.84, false);
+		blocks.get(2).setBlockBuildings(Building.residence, 95826.84, false);
 //		blocks.get(2).setBlockBuildings(Building.kindergarten, 5400, true);
 
 	}
