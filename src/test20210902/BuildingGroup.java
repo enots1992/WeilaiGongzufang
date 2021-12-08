@@ -3,10 +3,13 @@ package test20210902;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 import Vec.Vec;
 import jtsUtil.JTSRender;
+import jtsUtil.SetZFilter;
 import processing.core.PApplet;
 import test20210902.building.Building;
 import test20210902.building.Commercial;
@@ -119,7 +122,7 @@ public class BuildingGroup {
 //				}
 				for (int k = j + 1; k < bs.size(); k++) {
 					Building b2 = bs.get(k);
-					if (b1.touches(b2)) {
+					if (b1.overlaps(b2)) {
 						// 两个建筑接触则远离
 						Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
 						Vec v2 = new Vec(b2.boundary.getCentroid().getCoordinate());
@@ -155,14 +158,45 @@ public class BuildingGroup {
 		Geometry g2 = this.block.blockBoundary;
 
 		Vec vb = new Vec(g1.getCentroid().getCoordinate());
+
 		Vec vblock = new Vec(g2.getCentroid().getCoordinate());
 
 		Vec dir = vblock.subInstance(vb);
 		Vec dir2 = new Vec(15, 0, 0);
 		dir2.rotate(Math.PI * 2 * ran.nextDouble());
-		b.move(dir.addLocal(dir2));
 
-//		System.out.println("g2ctg1:" + (g2.contains(g1)));
+		dir.addLocal(dir2);
+		b.move(dir);
+//		b.setz(0);
+
+//		System.out.println("");
+//
+//		dir.print("move");
+//		System.out.println("g1 area:" + g1.getArea());
+//		System.out.println("g2 area:" + g2.getArea());
+//
+//		vb = new Vec(g1.getCentroid().getCoordinate());
+//		vblock = new Vec(g2.getCentroid().getCoordinate());
+//
+//		vb.print("g1center");
+//		vblock.print("g2center");
+//
+//		System.out.println("g1 is p:" + (g1 instanceof Polygon));
+//		System.out.println("g2 is p:" + (g2 instanceof Polygon));
+//		for (Coordinate c : g1.getCoordinates()) {
+//			System.out.print("new Coordinate(" + c.x + "," + c.y + "," + c.z + "),");
+//		}
+//		System.out.println("");
+//		for (Coordinate c : g2.getCoordinates()) {
+//			System.out.print("new Coordinate(" + c.x + "," + c.y + "," + c.z + "),");
+//		}
+//		
+//		System.out.println("");
+		System.out.println("g2 overlaps g1:" + (g2.overlaps(g1)));
+
+		System.out.println("g2 contain g1:" + (g2.contains(g1)));
+
+		System.out.println("g1 contain g2:" + (g1.contains(g2)));
 
 	}
 
