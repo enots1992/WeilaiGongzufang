@@ -14,7 +14,7 @@ import processing.core.PApplet;
 public class JTSTest extends PApplet {
 	JTSRender jrender;
 	CameraController cam;
-	Polygon p0, p1, p2,p3,p4;
+	Polygon p0, p1, p2, p3, p4;
 	Point pt;
 
 	public void setup() {
@@ -43,27 +43,27 @@ public class JTSTest extends PApplet {
 
 		Coordinate[] cs3 = new Coordinate[] { c4_, c8, c2_, c9, c4_ };
 
-		Coordinate[] t1 = new Coordinate[] { new Coordinate(45.30986818035488, 164.33051271018607, 0),
-				new Coordinate(45.30986818041309, 161.68051271121053, 0),
-				new Coordinate(47.40978542789706, 161.68051271121053, 0),
-				new Coordinate(47.40978542789706, 163.48051271148992, 0),
-				new Coordinate(53.00978542781557, 163.48051271148992, 0),
-				new Coordinate(53.00978542839765, 158.88051271186245, 0),
-				new Coordinate(53.80978542826959, 158.8805127113968, 0),
-				new Coordinate(53.8097854283278, 152.68051271800917, 0),
-				new Coordinate(50.20978542829286, 152.68051271296142, 0),
-				new Coordinate(50.209785428292854, 150.88051270771805, 0),
-				new Coordinate(37.40986818225248, 150.88051270771805, 0),
-				new Coordinate(37.409868182252474, 152.68051271296142, 0),
-				new Coordinate(33.80986818221754, 152.68051271800917, 0),
-				new Coordinate(33.80986818227575, 158.8805127113968, 0),
-				new Coordinate(34.60986818214769, 158.88051271186245, 0),
-				new Coordinate(34.60986818272977, 163.48051271148992, 0),
-				new Coordinate(40.20986818264828, 163.48051271148992, 0),
-				new Coordinate(40.20986818264828, 161.68051271121053, 0),
-				new Coordinate(42.30978543013225, 161.68051271121053, 0),
-				new Coordinate(42.30978543019046, 164.33051271018607, 0),
-				new Coordinate(45.30986818035488, 164.33051271018607, 0) };
+		Coordinate[] t1 = new Coordinate[] { new Coordinate(64.13137170597486, 187.67578976616647, 0),
+				new Coordinate(64.13137170603306, 185.02578976719093, 0),
+				new Coordinate(66.23128895351704, 185.02578976719093, 0),
+				new Coordinate(66.23128895351704, 186.82578976747033, 0),
+				new Coordinate(71.83128895343555, 186.82578976747033, 0),
+				new Coordinate(71.83128895401762, 182.22578976784285, 0),
+				new Coordinate(72.63128895388957, 182.2257897673772, 0),
+				new Coordinate(72.63128895394777, 176.02578977398957, 0),
+				new Coordinate(69.03128895391283, 176.02578976894182, 0),
+				new Coordinate(69.03128895391282, 174.22578976369846, 0),
+				new Coordinate(56.231371707872455, 174.22578976369846, 0),
+				new Coordinate(56.23137170787245, 176.02578976894182, 0),
+				new Coordinate(52.631371707837516, 176.02578977398957, 0),
+				new Coordinate(52.631371707895724, 182.2257897673772, 0),
+				new Coordinate(53.43137170776767, 182.22578976784285, 0),
+				new Coordinate(53.431371708349744, 186.82578976747033, 0),
+				new Coordinate(59.03137170826825, 186.82578976747033, 0),
+				new Coordinate(59.03137170826825, 185.02578976719093, 0),
+				new Coordinate(61.131288955752225, 185.02578976719093, 0),
+				new Coordinate(61.13128895581043, 187.67578976616647, 0),
+				new Coordinate(64.13137170597486, 187.67578976616647, 0), };
 
 		Coordinate[] t2 = new Coordinate[] { new Coordinate(127.50000014507783, 46.50000000083958, 0),
 				new Coordinate(-22.578170269154654, 46.50000000079871, 0.0),
@@ -72,12 +72,12 @@ public class JTSTest extends PApplet {
 				new Coordinate(127.5000001450777, 291.3190403532982, 0),
 				new Coordinate(127.5000001450777, 112.19492085036298, 0),
 				new Coordinate(127.5000001450777, 46.50000000084094, 0),
-				new Coordinate(127.50000014507783, 46.50000000083958, 0) };
+				new Coordinate(127.50000014507783, 46.50000000083958, 0), };
 
 		p0 = gf.createPolygon(cs1);
 		p1 = gf.createPolygon(cs2);
 		p2 = gf.createPolygon(cs3);
-		
+
 		p3 = gf.createPolygon(t1);
 		p4 = gf.createPolygon(t2);
 
@@ -95,10 +95,8 @@ public class JTSTest extends PApplet {
 //		println(p1.contains(pt));
 //
 //		println(p0.contains(p2));
-		
 
-
-		println(p3.contains(p4));
+		println(p4.contains(p3));
 	}
 
 	public void draw() {
@@ -113,7 +111,7 @@ public class JTSTest extends PApplet {
 //		jrender.draw(p2);
 //		jrender.setFill(0xff0ff0ff);
 //		jrender.draw(pt);
-		
+
 		jrender.setFill(0xffff0000);
 		jrender.draw(p3);
 		jrender.setFill(0xff00ff00);

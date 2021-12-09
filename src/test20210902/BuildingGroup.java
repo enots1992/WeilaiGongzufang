@@ -15,6 +15,7 @@ import test20210902.building.Building;
 import test20210902.building.Commercial;
 import test20210902.building.PublicRentalHouse;
 import test20210902.building.Residence;
+import test20210902.building.ResidenceType;
 import wblut.processing.WB_Render;
 
 public class BuildingGroup {
@@ -42,6 +43,7 @@ public class BuildingGroup {
 	Geometry boundary;
 
 	Random ran;
+	String typepath = "E:\\workspace\\30#WeiLai\\data\\houseType01.3dm";
 
 	public BuildingGroup(Block b, String type, double minArea, boolean isSingle) {
 		this.block = b;
@@ -60,7 +62,11 @@ public class BuildingGroup {
 	 * @param isSingle
 	 */
 	public void updateBuildings(String type, double minArea, boolean isSingle) {
+		ResidenceType t1 = null;
+		if (type == Building.residence) {
 
+			t1 = new ResidenceType(typepath);
+		}
 		double area = 0;
 
 		do {
@@ -77,7 +83,7 @@ public class BuildingGroup {
 				} else if (type == Building.publicRentalHouse) {
 					b = new PublicRentalHouse(block);
 				} else if (type == Building.residence) {
-					b = new Residence(block);
+					b = new Residence(block).setType(t1);
 				} else if (type == Building.kindergarten) {
 
 				}
@@ -88,13 +94,18 @@ public class BuildingGroup {
 			addBuilding(b);
 		} while (area < minArea);
 
+//		for(Building b:bs) {
+//			Vec center=new Vec(b.boundary.getCentroid().getCoordinate());
+//			center.print("center");
+//		}
+
 		updateBuildingPostion();
 
 		System.out.println("building num:" + this.getBuildings().size());
 
 	}
 
-	private int iter = 1;
+	private int iter = 100;
 
 	/**
 	 * update its position,away from boundary and other buildings
@@ -121,7 +132,9 @@ public class BuildingGroup {
 //					b1.addv(dir);
 //				}
 				for (int k = j + 1; k < bs.size(); k++) {
+
 					Building b2 = bs.get(k);
+
 					if (b1.overlaps(b2)) {
 						// 两个建筑接触则远离
 						Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
@@ -129,11 +142,10 @@ public class BuildingGroup {
 
 						Vec dir = v2.subInstance(v1);
 						dir.setLengthLocal(0.1);
-						v1.print("v1");
-						v1.print("v2");
+//						v1.print("v1");
+//						v2.print("v2");
 //						dir.print("dir");
-
-//						b1.addv(dir);
+						b1.addv(dir);
 
 					}
 				}
@@ -190,13 +202,10 @@ public class BuildingGroup {
 //		for (Coordinate c : g2.getCoordinates()) {
 //			System.out.print("new Coordinate(" + c.x + "," + c.y + "," + c.z + "),");
 //		}
-//		
+
 //		System.out.println("");
-		System.out.println("g2 overlaps g1:" + (g2.overlaps(g1)));
-
-		System.out.println("g2 contain g1:" + (g2.contains(g1)));
-
-		System.out.println("g1 contain g2:" + (g1.contains(g2)));
+//		System.out.println("g2 contain g1:" + (g2.contains(g1)));
+//		System.out.println("g1 contain g2:" + (g1.contains(g2)));
 
 	}
 

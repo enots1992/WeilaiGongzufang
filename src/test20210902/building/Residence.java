@@ -44,11 +44,15 @@ public class Residence extends Building {
 		this.floorNum = 18;
 		this.floorHeight = 3.3;
 		this.height = floorNum * floorHeight;
-		openFile();
-		updateBuildingBuffer2();
 
 		// TODO Auto-generated constructor stub
 
+	}
+
+	public Residence setType(ResidenceType type) {
+		setBoundary(type);
+		updateBuildingBuffer2();
+		return this;
 	}
 
 	public void updatePosition() {
@@ -60,35 +64,40 @@ public class Residence extends Building {
 		MoveFilter m = new MoveFilter(v);
 
 		boundary.apply(m);
-
 		buffer_toLow.apply(m);
 		buffer_toMulti.apply(m);
 		buffer_toHigh.apply(m);
-
 		boundary_house.apply(m);
 		boundary_support.apply(m);
+
+		boundary.buffer(0.01);
+		boundary.buffer(-0.01);
+
+		int num = boundary.getCoordinates().length;
+//		System.out.println("blength:"+num);
+
 	}
 
 	/**
 	 * open default
 	 */
-	public void openFile() {
-		IG.init();
-		IG.open(path);
+	private void setBoundary(ResidenceType type) {
+//		IG.init();
+//		IG.open(path);
 		for (ILayer layer : IG.layers()) {
 
 			switch (layer.name()) {
 			case "Í¼²ã 01":
 				// »§ÐÍÐÎ×´
-				boundary_house = this.getJTSPolygonFromFromICurves(layer.getCurves());
+				boundary_house = type.getBoundary_house();
 				break;
 			case "Í¼²ã 02":
 				// ¸¨Öú¿Õ¼äÐÎ×´
-				boundary_support = this.getJTSPolygonFromFromICurves(layer.getCurves());
+				boundary_support = type.getBoundary_support();
 				break;
 			case "Í¼²ã 03":
 				// ×Ü±ß½çÐÎ×´
-				boundary = this.getJTSPolygonFromFromICurves(layer.getCurves());
+				boundary = type.getBoundary();
 				break;
 			}
 		}
@@ -485,7 +494,7 @@ public class Residence extends Building {
 
 		Polygon p = gf.createPolygon(cs);
 
-		System.out.println("p:" + p.getArea());
+//		System.out.println("p:" + p.getArea());
 		return p;
 	}
 
