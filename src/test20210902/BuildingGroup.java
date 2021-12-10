@@ -112,25 +112,25 @@ public class BuildingGroup {
 	 */
 	public void updateBuildingPostion() {
 
+		Geometry g2 = this.block.blockBoundary;
 		for (int i = 0; i < iter; i++) {
 
 			for (int j = 0; j < bs.size(); j++) {
 				Building b1 = bs.get(j);
 				// 与边界的关系
-
-//				if (!(g2.contains(g1))) {
-//					Geometry g3 = g1.union(g2);
-//					Geometry g4 = g3.difference(g2);
-//					System.out.println("g1:" + g1.getArea());
-//					System.out.println("g2:" + g2.getArea());
-//					System.out.println("g3:" + g3.getArea());
-//					System.out.println("g4:" + g4.getArea());
-//					Vec v4 = new Vec(g4.getCentroid().getCoordinate());
-//					Vec v2 = new Vec(g2.getCentroid().getCoordinate());
-//					Vec dir = v4.subInstance(v2);
-//					dir.setLengthLocal(0.5);
-//					b1.addv(dir);
-//				}
+				Geometry g1 = b1.boundary.buffer(0.001).buffer(-0.001);
+				
+				if (!(g2.contains(g1))) {
+					
+					Geometry g3 = g1.union(g2);
+					Geometry g4 = g3.difference(g2);
+					
+					Vec v4 = new Vec(g4.getCentroid().getCoordinate());
+					Vec v2 = new Vec(g2.getCentroid().getCoordinate());
+					Vec dir = v2.subInstance(v4);
+					dir.setLengthLocal(5);
+					b1.addv(dir);
+				}
 				for (int k = j + 1; k < bs.size(); k++) {
 
 					Building b2 = bs.get(k);
@@ -140,8 +140,12 @@ public class BuildingGroup {
 						Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
 						Vec v2 = new Vec(b2.boundary.getCentroid().getCoordinate());
 
-						Vec dir = v2.subInstance(v1);
-						dir.setLengthLocal(0.1);
+						Vec dir = v1.subInstance(v2);
+						double dist = v1.getDistance(v2);
+
+						double t = 1 / Math.pow(Math.E, dist / 100);
+//						System.out.println("t:"+t);
+						dir.setLengthLocal(t);
 //						v1.print("v1");
 //						v2.print("v2");
 //						dir.print("dir");
@@ -149,13 +153,15 @@ public class BuildingGroup {
 
 					}
 				}
-
 			}
 
 			for (Building b1 : bs) {
 				b1.updatePosition();
 			}
-			System.out.println("updateBuildingPosition:" + ((double) i / (double) iter * 100) + "%");
+			
+			if (i % 5 == 0) {
+				System.out.println("updateBuildingPosition:" + ((double) i / (double) iter * 100) + "%");
+			}
 		}
 	}
 

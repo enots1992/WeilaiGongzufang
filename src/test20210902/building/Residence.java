@@ -49,17 +49,29 @@ public class Residence extends Building {
 
 	}
 
+	/**
+	 * ÉèÖÃ»ùµ×ÐÎ×´
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public Residence setType(ResidenceType type) {
 		setBoundary(type);
 		updateBuildingBuffer2();
 		return this;
 	}
 
+	/**
+	 * apply velocity
+	 */
 	public void updatePosition() {
 		move(v);
 		this.v = new Vec(0, 0, 0);
 	}
 
+	/**
+	 * move building
+	 */
 	public void move(Vec v) {
 		MoveFilter m = new MoveFilter(v);
 
