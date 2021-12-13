@@ -119,24 +119,29 @@ public class BuildingGroup {
 				Building b1 = bs.get(j);
 				// 与边界的关系
 				Geometry g1 = b1.boundary.buffer(0.001).buffer(-0.001);
-				
+
 				if (!(g2.contains(g1))) {
-					
+
 					Geometry g3 = g1.union(g2);
 					Geometry g4 = g3.difference(g2);
-					
+
 					Vec v4 = new Vec(g4.getCentroid().getCoordinate());
 					Vec v2 = new Vec(g2.getCentroid().getCoordinate());
 					Vec dir = v2.subInstance(v4);
-					dir.setLengthLocal(5);
+					dir.setLengthLocal(3);
 					b1.addv(dir);
 				}
 				for (int k = j + 1; k < bs.size(); k++) {
 
 					Building b2 = bs.get(k);
 
+					// 住宅遮挡方向的交错
+					if((b1 instanceof Residence)&&(b2 instanceof Residence)){
+						
+					}
+
 					if (b1.overlaps(b2)) {
-						// 两个建筑接触则远离
+						// 两个建筑接触则远离(不包括x方向的交错)
 						Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
 						Vec v2 = new Vec(b2.boundary.getCentroid().getCoordinate());
 
@@ -153,12 +158,30 @@ public class BuildingGroup {
 
 					}
 				}
+
 			}
 
+			// move to center
+			Vec currentCenter = new Vec(0, 0, 0);
+			int num = this.bs.size();
+
+			for (Building b : bs) {
+				Vec v = b.getCenter();
+				currentCenter = currentCenter.addInstance(v.mulInstance(1. / (double) num));
+			}
+
+			for (Building b : bs) {
+				Vec v = b.getCenter();
+				Vec dir = currentCenter.subInstance(v);
+				dir.setLengthLocal(0.1);
+				b.addv(dir);
+			}
+
+			// update
 			for (Building b1 : bs) {
 				b1.updatePosition();
 			}
-			
+
 			if (i % 5 == 0) {
 				System.out.println("updateBuildingPosition:" + ((double) i / (double) iter * 100) + "%");
 			}

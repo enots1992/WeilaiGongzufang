@@ -89,6 +89,42 @@ public abstract class Building {
 		return false;
 	}
 
+	public double getDistance(Building b) {
+		Vec v0 = this.getCenter();
+		Vec v1 = b.getCenter();
+		return v0.getDistance(v1);
+	}
+
+	/**
+	 * get center of Geometry boundary
+	 * 
+	 * @return Vec
+	 */
+	public Vec getCenter() {
+		return new Vec(this.boundary.getCentroid().getCoordinate());
+	}
+
+	/**
+	 * get aabb double[]{minx,miny,maxx,maxy} of a geometry
+	 * 
+	 * @param geo
+	 * @return
+	 */
+	public double[] getGeoAABB(Geometry geo) {
+		double minx = Double.MAX_VALUE;
+		double miny = Double.MAX_VALUE;
+		double maxx = Double.MIN_VALUE;
+		double maxy = Double.MIN_VALUE;
+		for (Coordinate c : geo.getCoordinates()) {
+			minx = (c.x < minx) ? c.x : minx;
+			miny = (c.y < miny) ? c.y : miny;
+			maxx = (c.x > maxx) ? c.x : maxx;
+			maxy = (c.y > maxy) ? c.y : maxy;
+
+		}
+		return new double[] { minx, miny, maxx, maxy };
+	}
+
 	public abstract boolean isLowStoreyBuilding();
 
 	public abstract boolean isMultiStoreyBuilding();
