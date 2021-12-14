@@ -105,7 +105,7 @@ public class BuildingGroup {
 
 	}
 
-	private int iter = 100;
+	private int iter = 200;
 
 	/**
 	 * update its position,away from boundary and other buildings
@@ -132,12 +132,44 @@ public class BuildingGroup {
 					b1.addv(dir);
 				}
 				for (int k = j + 1; k < bs.size(); k++) {
-
 					Building b2 = bs.get(k);
+					// 住宅遮挡方向的交错(仅正交)
+					if ((b1 instanceof Residence) && (b2 instanceof Residence)) {
+						double[] aabb1 = b1.GetBuildingAABB();
+						double[] aabb2 = b2.GetBuildingAABB();
 
-					// 住宅遮挡方向的交错
-					if((b1 instanceof Residence)&&(b2 instanceof Residence)){
-						
+						Vec center1 = b1.getCenter();
+						Vec center2 = b2.getCenter();
+						double disty = Math.abs(center1.y - center2.y);
+						double[] intersection = getIntersectionRange(aabb1, aabb2);
+
+						if (intersection != null) {
+							double dist = intersection[1] - intersection[0];
+							double t = 0;
+							if (dist < 30) {
+								t = 0.3;
+							} else if (30 <= dist || dist < 40) {
+								t = 0.4;
+							} else {
+								t = 0.5;
+							}
+							Building southB = (center1.y < center2.y) ? b1 : b2;
+							double gapy = southB.height * t;
+
+							if (disty < gapy) {
+								System.out.println("遮挡");
+								Vec dir1 = new Vec(0, center1.y - center2.y, 0);
+								Vec dir2 = new Vec(0, center2.y - center1.y, 0);
+
+								dir1.setLengthLocal(0.1 + (1 - disty / gapy) * 0.3);
+								dir2.setLengthLocal(0.1 + (1 - disty / gapy) * 0.3);
+
+								b1.addv(dir1);
+								b2.addv(dir2);
+
+							}
+
+						}
 					}
 
 					if (b1.overlaps(b2)) {
@@ -145,18 +177,18 @@ public class BuildingGroup {
 						Vec v1 = new Vec(b1.boundary.getCentroid().getCoordinate());
 						Vec v2 = new Vec(b2.boundary.getCentroid().getCoordinate());
 
+						Geometry intersection = b1.Intersection(b2);
+
 						Vec dir = v1.subInstance(v2);
 						double dist = v1.getDistance(v2);
 
 						double t = 1 / Math.pow(Math.E, dist / 100);
-//						System.out.println("t:"+t);
 						dir.setLengthLocal(t);
-//						v1.print("v1");
-//						v2.print("v2");
-//						dir.print("dir");
 						b1.addv(dir);
+						b2.addv(dir.mulInstance(-1));
 
 					}
+
 				}
 
 			}
@@ -171,9 +203,9 @@ public class BuildingGroup {
 			}
 
 			for (Building b : bs) {
-				Vec v = b.getCenter();
-				Vec dir = currentCenter.subInstance(v);
-				dir.setLengthLocal(0.1);
+				Vec c = b.getCenter();
+				Vec dir = currentCenter.subInstance(c);
+				dir.setLengthLocal(0.02);
 				b.addv(dir);
 			}
 
@@ -186,6 +218,40 @@ public class BuildingGroup {
 				System.out.println("updateBuildingPosition:" + ((double) i / (double) iter * 100) + "%");
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @param aabb1
+	 * @param aabb2
+	 * @return double[]{min,max}/null
+	 */
+	private double[] getIntersectionRange(double[] aabb1, double[] aabb2) {
+		double[] intersection = null;
+		double min1 = aabb1[0];
+		double max1 = aabb1[2];
+
+		double min2 = aabb2[0];
+		double max2 = aabb2[2];
+
+		double min = (min1 < min2) ? min1 : min2;
+		double max = (max1 > max2) ? max1 : max2;
+
+		if ((min == min1) && (max == max1)) {
+			// 包含 min1,(min2,max2),max1
+			intersection = new double[] { min2, max2 };
+		} else if ((min == min2) && (max == max2)) {
+			// 包含 min2,(min1,max1),max2
+			intersection = new double[] { min1, max1 };
+		} else if ((min == min1) && (max == max2) && (max1 > min2)) {
+			// 交错 min1,(min2,max1),max2
+			intersection = new double[] { min2, max1 };
+		} else if ((min == min2) && (max == max1) && (max2 > min1)) {
+			// 交错 min2,(min1,max2),max1
+			intersection = new double[] { min1, max2 };
+		}
+
+		return intersection;
 	}
 
 	/**

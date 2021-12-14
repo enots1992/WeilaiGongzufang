@@ -73,20 +73,23 @@ public class Residence extends Building {
 	 * move building
 	 */
 	public void move(Vec v) {
-		MoveFilter m = new MoveFilter(v);
+		if (v.getLength() != 0) {
+			MoveFilter m = new MoveFilter(v);
 
-		boundary.apply(m);
-		buffer_toLow.apply(m);
-		buffer_toMulti.apply(m);
-		buffer_toHigh.apply(m);
-		boundary_house.apply(m);
-		boundary_support.apply(m);
+			boundary.apply(m);
+			buffer_toLow.apply(m);
+			buffer_toMulti.apply(m);
+			buffer_toHigh.apply(m);
+			boundary_house.apply(m);
+			boundary_support.apply(m);
 
-		boundary.buffer(0.01);
-		boundary.buffer(-0.01);
+			boundary.buffer(0.01);
+			boundary.buffer(-0.01);
 
-		int num = boundary.getCoordinates().length;
-//		System.out.println("blength:"+num);
+			int num = boundary.getCoordinates().length;
+//			System.out.println("blength:"+num);
+
+		}
 
 	}
 

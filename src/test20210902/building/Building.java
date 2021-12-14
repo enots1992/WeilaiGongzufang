@@ -72,6 +72,16 @@ public abstract class Building {
 	public abstract void updatePosition();
 
 	/**
+	 * get boundary intersection
+	 * 
+	 * @param b b2
+	 * @return
+	 */
+	public Geometry Intersection(Building b) {
+		return this.boundary.intersection(b.boundary);
+	}
+
+	/**
 	 * this building touches building b
 	 * 
 	 * @param b
@@ -102,6 +112,15 @@ public abstract class Building {
 	 */
 	public Vec getCenter() {
 		return new Vec(this.boundary.getCentroid().getCoordinate());
+	}
+
+	/**
+	 * get aabb double[]{minx,miny,maxx,maxy} of this building's Geometry.boundary
+	 * 
+	 * @return
+	 */
+	public double[] GetBuildingAABB() {
+		return getGeoAABB(this.boundary);
 	}
 
 	/**
